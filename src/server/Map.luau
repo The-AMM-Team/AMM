@@ -1,5 +1,4 @@
 --<< Services
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --<< Modules
@@ -64,9 +63,8 @@ function module:spawnPlayersInsideMap(players: {Player}): ()
     if #spawns == 0 then 
         error("need spawning areas", 2) 
     end
-    warn(players)
+    
     for _, player in players do
-        warn(player)
         local character: Model? = player.Character
 
         if character then

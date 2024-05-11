@@ -16,8 +16,8 @@ local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
 --<< Types
 
 --<< Private Variables
-local intermissionTime = 5
-local roundTime = 5
+local intermissionTime = 1
+local roundTime = 1
 
 local playersInRound = {}
 local playersInLobby = {}
@@ -167,7 +167,7 @@ function module:removeFromRound(players: {Player}, teleportBack: boolean?): ()
                 local character: Model? = player.Character
                 
                 if character then
-                    character:PivotTo(CFrame.new())
+                    character:PivotTo(CFrame.new(0, 10, 0))
                 end
 
             end
