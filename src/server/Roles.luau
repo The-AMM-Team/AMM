@@ -62,6 +62,8 @@ end
 
 function module:generateRoles(playersInRound: {Player})
 
+    playersInRound = table.clone(playersInRound)
+
     assert(#playersInRound >= 2, "Need to have 2 players")
 
     local murderer: Player = getRandomWithChance(self.playersCurrentChanceOfMurderer)

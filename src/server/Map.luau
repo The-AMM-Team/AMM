@@ -54,17 +54,23 @@ end
 
 function module:spawnPlayersInsideMap(players: {Player}): ()
     
-    if not currentMap then warn("No map") return end
+    if not currentMap then 
+        warn("No map") 
+        return 
+    end
 
-    local spawns: {Instance} = currentMap.spawns:GetChildren()
-    if spawns == 0 then error("need spawning areas", 2) end
-    
+    local spawns: {Part} = currentMap.spawns:GetChildren()
+
+    if #spawns == 0 then 
+        error("need spawning areas", 2) 
+    end
+    warn(players)
     for _, player in players do
-        
+        warn(player)
         local character: Model? = player.Character
 
         if character then
-            character:PivotTo(spawns[math.random(1, #spawns)].Position)
+            character:PivotTo(spawns[math.random(1, #spawns)].CFrame)
         end
 
         -- TODO add some cool effect when you join the map or something :)))

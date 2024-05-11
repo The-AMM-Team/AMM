@@ -342,7 +342,6 @@ function module:startRound(players: {Player}): ()
     Roles:generateRoles(players)
 
     --// send this info to the client b*tch
-
     Map:loadMap(players)
 
     self.onRoundStart:Fire()
