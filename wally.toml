@@ -8,3 +8,6 @@ realm = "shared"
 Red = "red-blox/red@2.3.0"
 fusion = "elttob/fusion@0.2.0"
 lemonsignal = "data-oriented-house/lemonsignal@1.10.0"
+
+[server-dependencies]
+datakeep = "noahrepublic/datakeep@3.1.1"

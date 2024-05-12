@@ -5,13 +5,13 @@ local module = {}
 
 function module:Start()
     
-    Players.PlayerAdded:Connect(function(player)
-        self:playerAdded(player)
-    end)
-
     for _, player: Player in Players:GetPlayers() do
         self:playerAdded(player)
     end
+
+    Players.PlayerAdded:Connect(function(player)
+        self:playerAdded(player)
+    end)
 
 end
 

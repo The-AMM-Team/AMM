@@ -7,7 +7,7 @@ local Types = require(ReplicatedStorage.Shared.Types)
 return {
 
     name = "Test",
-    spawns = Instance.new("Folder"),
+    spawns = workspace.Test.Spawns,
     
     components = {
 

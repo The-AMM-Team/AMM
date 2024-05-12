@@ -8,6 +8,9 @@
         "$path": "src/shared",
         "Packages": {
           "$path": "Packages"
+        },
+        "ServerPackages": {
+          "$path": "ServerPackages"
         }
       }
     },
