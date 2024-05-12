@@ -60,15 +60,15 @@ function module:spawnPlayersInsideMap(players: {Player}): ()
 
     local spawns: {Part} = currentMap.spawns:GetChildren()
 
-    if #spawns == 0 then 
-        error("need spawning areas", 2) 
-    end
+    assert(#spawns >= 12, "Map needs more than 12")
     
     for _, player in players do
         local character: Model? = player.Character
 
         if character then
-            character:PivotTo(spawns[math.random(1, #spawns)].CFrame)
+            local index = math.random(1, #spawns)
+            character:PivotTo(spawns[index].CFrame)
+            table.remove(spawns, index)
         end
 
         -- TODO add some cool effect when you join the map or something :)))
