@@ -13,11 +13,11 @@ return {
 
         {
             load = function()
-                warn("Component system has been loaded")
+                --print("Component system has been loaded")
             end,
 
             unload = function()
-                warn("Component system has been unloaded")
+                --print("Component system has been unloaded")
             end
         }
 
