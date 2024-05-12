@@ -5,6 +5,9 @@
 /*.rbxlx.lock
 /*.rbxl.lock
 
+#UI
+/src/client/UI/stories
+
 #libs
 /wally.lock
 /Packages
