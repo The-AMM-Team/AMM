@@ -29,7 +29,7 @@ function module:version()
     
     local versionUI = require(script.Parent.UI.version)
 
-    local version = "v0.0.1"
+    local version = require(ReplicatedStorage.Shared.Version)
     local device = Input:getDevice()
 
     if device == "Phone" then
