@@ -1,11 +1,16 @@
 --!strict
 
 --<< Services
+local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService") 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --<< Packages
 local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)   
+
+--<< Network 
+local WeaponRemote = require(ReplicatedStorage.Shared.Remotes.WeaponRemote)
+local Attack = WeaponRemote.Attack:Client()
 
 --<< Types
 type device = "Keyboard" | "Phone" | "Controller"?
@@ -25,6 +30,16 @@ function module:Start()
 			self._connections[input.KeyCode].signal:Fire()
 			self._connections[input.KeyCode].fired += 1
 		end
+	end)
+
+	local Mouse = Players.LocalPlayer:GetMouse() 
+	Mouse.Button1Down:Connect(function()
+		local character = Players.LocalPlayer.Character
+		
+		if character and character.PrimaryPart then
+			Attack:Fire(character.PrimaryPart.CFrame, Mouse.Hit)			
+		end
+
 	end)
 
 end

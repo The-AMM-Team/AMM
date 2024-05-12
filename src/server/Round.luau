@@ -16,8 +16,8 @@ local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
 --<< Types
 
 --<< Private Variables
-local intermissionTime = 1
-local roundTime = 1
+local intermissionTime = 5
+local roundTime = 10
 
 local playersInRound = {}
 local playersInLobby = {}
@@ -232,9 +232,15 @@ end
 --[[    
     Checks if round can end
 ]]
-function module:checkIfRoundCanEnd()
+function module:checkIfRoundCanEnd(player: Player)
     
     -- Switch on roles
+    local role = Roles:getPlayerRole()
+    if role == "murderer" then
+        self.endRound:Fire("Innocents Win")
+    elseif role == "sheriff" then
+        --Drop the gun
+    end
 
 end
 
@@ -247,7 +253,7 @@ function module:playerDeathOrRemoving(player: Player)
         self:removeFromRound({player})
         self:addPlayersToLobby({player})
 
-        self:checkIfRoundCanEnd()
+        self:checkIfRoundCanEnd(player)
     end
 end
 

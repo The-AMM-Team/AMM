@@ -27,4 +27,18 @@ function module:playerAdded(player: Player)
 
 end
 
+function module:getPlayersHumanoid(player): Humanoid?
+    local character: Model? = player.Character
+    if character then
+        return character:FindFirstChild("Humanoid") :: Humanoid
+    end
+end
+
+function module:getPlayersHumanRootPart(player: Player): Part?
+    local character: Model? = player.Character
+    if character then
+        return character.PrimaryPart :: Part
+    end
+end
+
 return module
