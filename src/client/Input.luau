@@ -16,9 +16,13 @@ local AttackRemote = clientNet.Attack
 --<< Types
 type device = "Keyboard" | "Phone" | "Controller"?
 
---<< Public 
+--<< Public Variables
 local module = {
-	_connections = {}
+	_connections = {} :: {
+		signal: Signal.Signal,
+		fired: number,
+		amount: number
+	}
 }
 
 --<< Public Functions
@@ -28,8 +32,9 @@ function module:Start()
 
 		if gameProcessedEvent then return end
 		if input.KeyCode and self._connections[input.KeyCode] then
-			self._connections[input.KeyCode].signal:Fire()
-			self._connections[input.KeyCode].fired += 1
+			local info = self._connections[input.KeyCode]
+			info.signal:Fire()
+			info.fired += 1
 		end
 	end)
 
