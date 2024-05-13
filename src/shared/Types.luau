@@ -3,4 +3,12 @@ export type component = {
     unload: () -> ()
 } 
 
+export type playerData = {
+
+    coins: number,
+
+    joinData: number
+
+}
+
 return nil

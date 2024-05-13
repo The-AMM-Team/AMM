@@ -6,14 +6,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Roles = require(script.Parent.Roles)
 local Map = require(script.Parent.Map)
 
---<< Utils
-
 --<< Packages
 local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
-
---<< Remotes
-
---<< Types
 
 --<< Private Variables
 local intermissionTime = 5
@@ -235,11 +229,12 @@ end
 function module:checkIfRoundCanEnd(player: Player)
     
     -- Switch on roles
-    local role = Roles:getPlayerRole()
+    local role = Roles:getPlayerRole(player)
     if role == "murderer" then
         self.endRound:Fire("Innocents Win")
     elseif role == "sheriff" then
         --Drop the gun
+        print("I should Drop the gun her but...")
     end
 
 end
@@ -299,7 +294,9 @@ function module:startIntermission(reason: string?): ()
     local connection = self.endIntermission:Connect(function()
         
         --// cap that ***** *** thread (I pray every night that this doesn't mem leak)
-        coroutine.close(thread)
+        if thread then
+            coroutine.close(thread)
+        end
 
         --// start a new round : ))
         local playersReadyToGoIntoRound: {Player}? = self:checkIfRoundCanStart()
@@ -331,7 +328,9 @@ function module:startIntermission(reason: string?): ()
     end)
 
     --// I was thinking, coroutine sounds so like western like (koooruuthing) OOOO maybe kinda like dexxter (KORUTHIN YA KNOW)
-    coroutine.resume(thread)
+    if thread then 
+        coroutine.resume(thread)
+    end
 
 end
 
@@ -359,7 +358,9 @@ function module:startRound(players: {Player}): ()
     local connection = self.endRound:Connect(function(reason: string)
         
         --// gun down the thread with a aka47 (.close function is the aka47)
-        coroutine.close(thread)
+        if thread then
+            coroutine.close(thread)
+        end
 
         self:roundEndingEffects()
         self:roundCleanup()
@@ -384,7 +385,9 @@ function module:startRound(players: {Player}): ()
     end)
 
     --// start running the round :0
-    coroutine.resume(thread)
+    if thread then
+        coroutine.resume(thread)
+    end
 
 end
 

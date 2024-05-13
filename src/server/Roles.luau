@@ -2,44 +2,27 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+--<< Modules
+local Chance = require(ReplicatedStorage.Shared.Chance)
+
+--<< Remotes
+local serverNet = require(script.Parent.serverNet)
+
 --<< Packages
 local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal) 
 
 --<< Types
 type rolesTableFormat = {
-
     sheriff: Player?,
     murderer: Player?,
     innocent: {Player}
-
 }
 
 type roles = "sheriff" | "murderer" | "innocent"
 
---<< Private Variables
-
 --<< Private Functions
 local function getPlayersAsPercent(): number
     return 100 / #Players:GetPlayers()
-end
-
-local function getRandomWithChance<T>(rarities: {[T]: number}): T
-
-    local randomNumber = Random.new()
-    local counter = 0
-
-    for _: T, chance: number in rarities do
-        counter += chance
-    end
-
-    local chosennumber = randomNumber:NextNumber(0, counter)
-    for name: T, chance: number in rarities do
-        counter -= chance
-        if chosennumber > counter then
-            return name
-        end
-    end
-
 end
 
 local function createRoleTables(sheriff: Player, murderer: Player, innocent: {Player}): rolesTableFormat
@@ -50,7 +33,7 @@ local function createRoleTables(sheriff: Player, murderer: Player, innocent: {Pl
     }
 end
 
---<< Global Variables
+--<< Public Variables
 local module = {
 
     onRolesAdded = Signal.new(),
@@ -59,11 +42,12 @@ local module = {
 
 }
 
---<< Global Functions
+--<< Public Functions
 function module:Start()
     
     Players.PlayerAdded:Connect(function(player)
         self.playersCurrentChanceOfMurderer[player] = 2
+        
     end)
 
     Players.PlayerRemoving:Connect(function(player)
@@ -78,24 +62,36 @@ function module:generateRoles(playersInRound: {Player})
 
     assert(#playersInRound >= 2, "Need to have 2 players")
 
-    local murderer: Player = getRandomWithChance(self.playersCurrentChanceOfMurderer)
+    local murderer: Player = Chance(self.playersCurrentChanceOfMurderer)
     table.remove(playersInRound, table.find(playersInRound, murderer))
-    
+    serverNet.Role.Fire(murderer, "murderer")
 
     local sheriff: Player = playersInRound[math.random(1, #playersInRound)]
-    table.remove(playersInRound, table.find(playersInRound, murderer))
+    table.remove(playersInRound, table.find(playersInRound, sheriff))
+    serverNet.Role.Fire(sheriff, "sheriff")
+
+    serverNet.Role.FireList(playersInRound, "innocent")
 
     self.currentPlayersRoles = createRoleTables(sheriff, murderer, playersInRound)
     self.onRolesAdded:Fire(table.clone(self.currentPlayersRoles))
 
 end
 
-function module:increaseAllPlayersChancesEvenly(players: {Player})
+function module:getAllChances(): number
+    local amount = 0
+    for _, chance in self.playersCurrentChanceOfMurderer do
+        amount += chance
+    end
+    return amount
+end
 
-    local totalAmountofPercent = math.random(1, getPlayersAsPercent() / 10)
+function module:increaseAllPlayersChancesEvenly()
 
-    for _, player in players do
-        self:setPlayerMurdererChance(player, self:getPlayerCurrentMurdererChance(player) + totalAmountofPercent)
+    -- Get all chances out of 100 and then divided by players
+    local chance = (100 - self:getAllChances()) / #Players:GetPlayers()
+
+    for _, player in Players:GetPlayers() do
+        self:setPlayerMurdererChance(player, self:getPlayerCurrentMurdererChance(player) + chance)
     end
 
 end
@@ -130,10 +126,9 @@ end
 function module:resetAllRoles()
 
     local roles = self:getAllRoles()
-
-    self:setPlayerMurdererChance(roles.murderer, 5)
-    self:increaseAllPlayersChancesEvenly({roles.sheriff})
-    self:increaseAllPlayersChancesEvenly(roles.innocent)
+    
+    self:setPlayerMurdererChance(roles.murderer, 0)
+    self:increaseAllPlayersChancesEvenly()
 
     self.currentPlayersRoles = nil
 end

@@ -10,3 +10,10 @@ event Attack = {
 		mousePosition: Vector3,
 	},
 }
+
+event Role = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: string,
+}

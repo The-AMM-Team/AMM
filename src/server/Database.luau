@@ -3,8 +3,6 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
---<< Modules
-
 --<< Packages
 local Datakeep = require(ReplicatedStorage.Shared.ServerPackages.datakeep)
 local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
@@ -22,7 +20,8 @@ local KeepStore = Datakeep.GetStore(if RunService:IsStudio() then "TEMP" else "M
 
 local loadedKeeps = {}
 
---<< Private Functions
+--<< Types
+local Types = require(ReplicatedStorage.Shared.Types)
 
 --<< Public Variables
 local module = {
@@ -75,10 +74,15 @@ function module:playerAdded(player: Player)
         end
 
         loadedKeeps[player] = keep
+        keep.Data.coins = 1000
         self.onDataLoaded:Fire(keep.Data)
 
     end)
 
+end
+
+function module:getPlayerData(player: Player): Types.playerData
+    return self:getKeep(player).Data
 end
 
 function module:getKeep(player: Player): any?

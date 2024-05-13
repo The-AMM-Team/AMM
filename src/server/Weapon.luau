@@ -4,16 +4,15 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 --<< Modules
-local Round = require(script.Parent.Round)
 local Roles = require(script.Parent.Roles)
 local Character = require(script.Parent.Character)
+
+--<< Remotes
+local serverNet = require(script.Parent.serverNet)
 
 --<< Packages
 local Fusion = require(ReplicatedStorage.Shared.Packages.fusion)
 local New = Fusion.New
-
---<< Remotes
-local serverNet = require(script.Parent.serverNet)
 
 --<< Private Variables
 local playerHitboxs: {[Player]: Part} = {}
@@ -44,12 +43,13 @@ local function convertTableWithKeysToValues<I, V>(tbl: {[I]: V}): {V}
     return out
 end
 
-local function findPlayerFromHitbox(foundHitbox: Part): Player?
+local function findPlayerFromHitbox(foundHitbox: BasePart): Player?
     for player: Player, hitbox: Part in playerHitboxs do
          if hitbox == foundHitbox then
             return player
          end
     end
+    return nil
 end
 
 local function getHitboxsWithoutAPlayer(player: Player): {[Player]: Part}
@@ -72,9 +72,8 @@ function module:Start()
         self:createHitbox(player)
     end)
 
-     serverNet.Attack.On(function(player: Player, Data: {characterCFrame: CFrame, mousePosition: Vector3})
+     serverNet.Attack.SetCallback(function(player: Player, Data: {characterCFrame: CFrame, mousePosition: Vector3})
         local character: Model? = player.Character
-        
         if character and character.PrimaryPart then
             if checkDistance(Data.characterCFrame.Position, character.PrimaryPart.Position) < 3 then
                 local role = Roles:getPlayerRole(player)
@@ -138,7 +137,7 @@ function module:attackWithGun(killer: Player, characterCFrame: CFrame, hit: Vect
     raycastParams.FilterType = Enum.RaycastFilterType.Include
 
     local result = workspace:Raycast(characterCFrame.Position, (hit  - characterCFrame.Position).Unit*300, raycastParams)
-    if result then
+    if result then  
         local player = findPlayerFromHitbox(result.Instance)
         self:killPlayers(killer, {player}) 
     end

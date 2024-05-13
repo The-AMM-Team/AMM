@@ -1,8 +1,10 @@
 --<< Services
 local Players = game:GetService("Players")
 
+--<< Public Variables
 local module = {}
 
+--<< Public Functions
 function module:Start()
     
     for _, player: Player in Players:GetPlayers() do
@@ -32,6 +34,7 @@ function module:getPlayersHumanoid(player): Humanoid?
     if character then
         return character:FindFirstChild("Humanoid") :: Humanoid
     end
+    return nil
 end
 
 function module:getPlayersHumanRootPart(player: Player): Part?
@@ -39,6 +42,7 @@ function module:getPlayersHumanRootPart(player: Player): Part?
     if character then
         return character.PrimaryPart :: Part
     end
+    return nil
 end
 
 return module

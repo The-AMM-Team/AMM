@@ -4,16 +4,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --<< Modules
 local ListOfMaps = require(ReplicatedStorage.Shared.Maps.List)
 
---<< Utils
-
---<< Packages
-
---<< Types
-
 --<< Private Variables
 local currentMap = nil
-
---<< Private Functions
 
 --<< Public Variables
 local module = {}

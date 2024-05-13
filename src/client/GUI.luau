@@ -5,6 +5,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --<< Modules
 local Input = require(script.Parent.Input)
 
+--<< Remotes
+local clientNet = require(script.Parent.clientNet)
+
 --<< Private Functions
 local function createScreen(): ScreenGui
     local screen = Instance.new("ScreenGui")
@@ -13,16 +16,16 @@ local function createScreen(): ScreenGui
     screen.Name = "MAIN"
     return screen
 end
---<< Global Variables
+--<< Public Variables
 local module = {
     screen = createScreen()
 }
 
---<< Global Functions
+--<< Public Functions
 function module:Start()
-
     self:version()
-
+    self:client()
+    self:role()
 end
 
 function module:version()
@@ -49,8 +52,21 @@ function module:version()
             Position =  UDim2.fromScale(0.5, 1),
         }
     end
+    
+end
 
+function module:role()
+    clientNet.Role.SetCallback(function(role: string)  
+        print(`You are {role}`)
+    end)
+end
 
+function module:client()
+    local clientUI = require(script.Parent.UI.client)
+
+    clientUI {
+        parent = self.screen
+    }
 
 end
 
