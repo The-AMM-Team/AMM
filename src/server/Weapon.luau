@@ -6,6 +6,7 @@ local RunService = game:GetService("RunService")
 --<< Modules
 local Roles = require(script.Parent.Roles)
 local Character = require(script.Parent.Character)
+local KillEffects = require(ReplicatedStorage.Shared.KillEffects.index)
 
 --<< Remotes
 local serverNet = require(script.Parent.serverNet)
@@ -150,6 +151,7 @@ function module:killPlayers(killer: Player, playersToKill: {Player})
             
         if humanoid then
             humanoid:TakeDamage(100)
+            KillEffects["cheeseBurger"](killer, player)
         end
     end
     
