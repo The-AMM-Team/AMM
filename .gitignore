@@ -8,6 +8,10 @@
 #UI
 /src/client/UI/stories
 
+#Network Build
+/src/client/clientNet.luau
+/src/server/serverNet.luau
+
 #libs
 /wally.lock
 /Packages

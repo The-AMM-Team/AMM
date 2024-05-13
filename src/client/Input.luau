@@ -9,8 +9,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)   
 
 --<< Network 
-local WeaponRemote = require(ReplicatedStorage.Shared.Remotes.WeaponRemote)
-local Attack = WeaponRemote.Attack:Client()
+local clientNet = require(script.Parent.clientNet)
+
+local AttackRemote = clientNet.Attack
 
 --<< Types
 type device = "Keyboard" | "Phone" | "Controller"?
@@ -37,7 +38,10 @@ function module:Start()
 		local character = Players.LocalPlayer.Character
 		
 		if character and character.PrimaryPart then
-			Attack:Fire(character.PrimaryPart.CFrame, Mouse.Hit)			
+			AttackRemote.Fire({
+				characterCFrame = character.PrimaryPart.CFrame, 
+				mousePosition = Mouse.Hit.Position
+			})			
 		end
 
 	end)

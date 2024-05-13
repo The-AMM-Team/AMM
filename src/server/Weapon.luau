@@ -13,8 +13,7 @@ local Fusion = require(ReplicatedStorage.Shared.Packages.fusion)
 local New = Fusion.New
 
 --<< Remotes
-local WeaponRemote = require(ReplicatedStorage.Shared.Remotes.WeaponRemote)
-local AttackRemote = WeaponRemote.Attack:Server()
+local serverNet = require(script.Parent.serverNet)
 
 --<< Private Variables
 local playerHitboxs: {[Player]: Part} = {}
@@ -73,23 +72,21 @@ function module:Start()
         self:createHitbox(player)
     end)
 
-    AttackRemote:On(function(player: Player, characterCFrame: CFrame, mouseHit: CFrame)
-
+     serverNet.Attack.On(function(player: Player, Data: {characterCFrame: CFrame, mousePosition: Vector3})
         local character: Model? = player.Character
         
         if character and character.PrimaryPart then
-            if checkDistance(characterCFrame.Position, character.PrimaryPart.Position) < 3 then
+            if checkDistance(Data.characterCFrame.Position, character.PrimaryPart.Position) < 3 then
                 local role = Roles:getPlayerRole(player)
                 if role == "sheriff" then
-                    self:attackWithGun(player, characterCFrame, mouseHit) 
+                    self:attackWithGun(player, Data.characterCFrame, Data.mousePosition) 
                 elseif role == "murderer" then
-                    self:attackWithKnife(player, characterCFrame)
+                    self:attackWithKnife(player, Data.characterCFrame)
                 else
-                    local _ = self:attackWithGun(player, characterCFrame, mouseHit)
+                    local _ = self:attackWithGun(player, Data.characterCFrame, Data.mousePosition)
                 end
             end
         end
-
     end)
 
 end
@@ -135,12 +132,12 @@ function module:attackWithKnife(killer: Player, characterCFrame: CFrame)
 
 end
 
-function module:attackWithGun(killer: Player, characterCFrame: CFrame, hit: CFrame)
+function module:attackWithGun(killer: Player, characterCFrame: CFrame, hit: Vector3)
     local raycastParams = RaycastParams.new()
     raycastParams.FilterDescendantsInstances = convertTableWithKeysToValues(getHitboxsWithoutAPlayer(killer))
     raycastParams.FilterType = Enum.RaycastFilterType.Include
 
-    local result = workspace:Raycast(characterCFrame.Position, (hit.Position  - characterCFrame.Position).Unit*300, raycastParams)
+    local result = workspace:Raycast(characterCFrame.Position, (hit  - characterCFrame.Position).Unit*300, raycastParams)
     if result then
         local player = findPlayerFromHitbox(result.Instance)
         self:killPlayers(killer, {player}) 
