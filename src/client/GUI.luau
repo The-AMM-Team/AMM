@@ -4,6 +4,13 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --<< Modules
 local Input = require(script.Parent.Input)
+local Camera = require(script.Parent.Camera)
+
+--<< Packages
+local Fusion = require(ReplicatedStorage.Shared.Packages.fusion)
+local New = Fusion.New
+local Spring = Fusion.Spring
+local Value = Fusion.Value
 
 --<< Remotes
 local clientNet = require(script.Parent.clientNet)
@@ -23,9 +30,39 @@ local module = {
 
 --<< Public Functions
 function module:Start()
+    
     self:version()
     self:client()
     self:role()
+
+    self:crateOpen()
+
+    Input:bindToInput(Enum.KeyCode.E, function()
+        clientNet.OpenCrate.Fire("wooden")
+	end)
+
+end
+
+function module:darkBackground(): () -> ()
+    
+    local backgroundTransparency = Value(1)
+
+    local frame = New "Frame" {
+        ZIndex = -1,
+        Parent = self.screen,
+        Size = UDim2.fromScale(1, 1),
+        BackgroundColor3 = Color3.fromRGB(20, 20, 20),
+        BackgroundTransparency = Spring(backgroundTransparency, 25, 0.75),
+    } 
+    
+    backgroundTransparency:set(0.1)
+
+    return function()
+        backgroundTransparency:set(1)
+        task.wait(2)
+        frame:Destroy()    
+    end 
+
 end
 
 function module:version()
@@ -67,6 +104,26 @@ function module:client()
     clientUI {
         parent = self.screen
     }
+end
+
+function module:crateOpen()
+    local crateOpening = require(script.Parent.UI.crateOpening)
+
+    clientNet.CrateResult.SetCallback(function(item)
+        warn(item)
+        local cleanup = self:darkBackground()
+        Camera:setCameraFieldOfView(50)
+        crateOpening {
+            parent = self.screen,
+            rollingTime = 10,
+            crate = "wooden",
+            gyattItem = item,
+            cleanup = function()
+                Camera:setCameraFieldOfView(70)
+                cleanup()
+            end
+        }        
+    end)
 
 end
 

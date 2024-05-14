@@ -17,3 +17,17 @@ event Role = {
 	call: SingleAsync,
 	data: string,
 }
+
+event OpenCrate = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: string,
+}
+
+event CrateResult = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: string,
+}
