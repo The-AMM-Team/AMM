@@ -11,6 +11,25 @@ event Attack = {
 	},
 }
 
+event Equip = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+}
+
+event Unequip = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+}
+
+event Round = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: boolean,
+}
+
 event Role = {
 	from: Server,
 	type: Reliable,

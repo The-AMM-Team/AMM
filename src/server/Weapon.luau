@@ -5,7 +5,10 @@ local RunService = game:GetService("RunService")
 
 --<< Modules
 local Roles = require(script.Parent.Roles)
-local Character = require(script.Parent.Character)
+local Character = require(ReplicatedStorage.Shared.Character)
+
+local Guns = require(ReplicatedStorage.Shared.Guns.index)
+local Knifes = require(ReplicatedStorage.Shared.Knifes.index)
 local KillEffects = require(ReplicatedStorage.Shared.KillEffects.index)
 
 --<< Remotes
@@ -17,8 +20,17 @@ local New = Fusion.New
 
 --<< Private Variables
 local playerHitboxs: {[Player]: Part} = {}
+local modelsOnPlayers: {[Player]: BasePart} = {} 
 
 --<< Private Functions
+local function createWeld(parent: Instance, part0: BasePart, part1: BasePart): Weld
+	local weld = Instance.new("Weld")
+    weld.Parent = parent
+	weld.Part0 = part0
+	weld.Part1 = part1
+	return weld
+end
+
 local function createHitbox(): Part
     return New "Part" {
         Parent = workspace,
@@ -73,7 +85,21 @@ function module:Start()
         self:createHitbox(player)
     end)
 
-     serverNet.Attack.SetCallback(function(player: Player, Data: {characterCFrame: CFrame, mousePosition: Vector3})
+    serverNet.Unequip.SetCallback(function(player: Player)  
+        if modelsOnPlayers[player] then
+            modelsOnPlayers[player]:Destroy()
+        end
+    end)
+
+    serverNet.Equip.SetCallback(function(player)
+        if Roles:getMurderer() == player then
+            modelsOnPlayers[player] = self:mountKnife(player)
+        elseif Roles:getSheriff() == player then
+            modelsOnPlayers[player] = self:mountGun(player)
+        end
+    end)
+
+    serverNet.Attack.SetCallback(function(player: Player, Data: {characterCFrame: CFrame, mousePosition: Vector3})
         local character: Model? = player.Character
         if character and character.PrimaryPart then
             if checkDistance(Data.characterCFrame.Position, character.PrimaryPart.Position) < 3 then
@@ -89,6 +115,48 @@ function module:Start()
         end
     end)
 
+end
+
+function module:mountKnife(player: Player): BasePart?
+    local character = player.Character
+    local rightHand = Character:getBodyPartFromCharacter(player, "RightHand")
+    if rightHand and character then
+        
+        local knife: BasePart = Knifes.flameDragon.model:Clone()
+        knife.Parent = player.Character
+
+        local weld = createWeld(character, knife, rightHand)
+    
+        local rightHandAttachment: Attachment = weld.Part0:FindFirstChild("RightGripAttachment") :: Attachment
+        local knifeHandAttachment: Attachment = weld.Part1:FindFirstChild("RightGripAttachment") :: Attachment    
+
+        weld.C0 = rightHandAttachment.CFrame
+        weld.C1 = knifeHandAttachment.CFrame
+
+        return knife
+    end
+    return nil
+end
+
+function module:mountGun(player: Player): BasePart?
+    local character = player.Character
+    local rightHand = Character:getBodyPartFromCharacter(player, "RightHand")
+    if rightHand and character then
+        
+        local knife: BasePart = Guns.lilFlame.model:Clone()
+        knife.Parent = player.Character
+
+        local weld = createWeld(character, knife, rightHand)
+    
+        local rightHandAttachment: Attachment = weld.Part0:FindFirstChild("RightGripAttachment") :: Attachment
+        local knifeHandAttachment: Attachment = weld.Part1:FindFirstChild("RightGripAttachment") :: Attachment    
+
+        weld.C0 = rightHandAttachment.CFrame
+        weld.C1 = knifeHandAttachment.CFrame
+        
+        return knife
+    end
+    return nil
 end
 
 function module:createHitbox(player: Player)

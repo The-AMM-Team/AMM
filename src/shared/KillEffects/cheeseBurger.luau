@@ -5,7 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Sound = require(ReplicatedStorage.Shared.Sound)  
 
 --<< Private Variables
-local burgerModel: BasePart = ReplicatedStorage.Models.Burger
+local burgerModel: BasePart = ReplicatedStorage.Models.Effects.Burger
 
 --<< Private Functions
 local function createBurger(position: Vector3): BasePart

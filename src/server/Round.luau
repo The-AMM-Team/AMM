@@ -9,6 +9,9 @@ local Map = require(script.Parent.Map)
 --<< Packages
 local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
 
+--<< Remotes
+local serverNet = require(script.Parent.serverNet)
+
 --<< Private Variables
 local intermissionTime = 5
 local roundTime = 10
@@ -285,6 +288,9 @@ function module:startIntermission(reason: string?): ()
         print(reason)
     end
 
+    --// Fire round Remote
+    serverNet.Round.FireAll(false)
+
     self.onIntermissionStart:Fire()
 
     --// some thread stuff
@@ -348,6 +354,9 @@ function module:startRound(players: {Player}): ()
 
     --// send this info to the client b*tch
     Map:loadMap(players)
+
+    --// Fire remote O-O
+    serverNet.Round.FireAll(true)
 
     self.onRoundStart:Fire()
 
