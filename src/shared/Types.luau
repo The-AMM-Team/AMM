@@ -1,14 +1,21 @@
 export type component = {
-    load: () -> (),
-    unload: () -> ()
-} 
+	load: () -> (),
+	unload: () -> (),
+}
 
 export type playerData = {
 
-    coins: number,
+	coins: number,
 
-    joinData: number
+	currentKnife: {
+		name: string,
+	},
+	currentGun: {
+		name: string,
+	},
 
+	roles: { string },
+	joinData: number,
 }
 
 return nil

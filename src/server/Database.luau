@@ -11,7 +11,15 @@ local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
 local template = {
     
     coins = 0,
+
+    currentKnife = {
+        name = "flameDragon"
+    },  
+    currentGun = {
+        name = "lilFlame"
+    },  
     
+    roles = {"contributer", "tester"},
     joinDate = os.time(),
 
 }
@@ -25,9 +33,7 @@ local Types = require(ReplicatedStorage.Shared.Types)
 
 --<< Public Variables
 local module = {
-    
     onDataLoaded = Signal.new(),
-
 }
 
 --<< Public Functions
@@ -74,8 +80,8 @@ function module:playerAdded(player: Player)
         end
 
         loadedKeeps[player] = keep
-        keep.Data.coins = 1000
-        self.onDataLoaded:Fire(keep.Data)
+        keep.Data = template
+        self.onDataLoaded:Fire(player, keep.Data)
 
     end)
 
