@@ -2,17 +2,20 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Server
+local Database = require(script.Database)
 local Round = require(script.Round)
 local Roles = require(script.Roles)
-local Database = require(script.Database)
 local Weapon = require(script.Weapon)
+local Hitboxs = require(script.Hitboxs)
+local Commands = require(script.Commands)
 local Items = require(script.Items)
 
 Database:Start()
 Round:Start()
 Roles:Start()
 Weapon:Start()
-Items:Start()
+Hitboxs:Start()
+Commands:Start()
 
 -- Shared
 local Character = require(ReplicatedStorage.Shared.Character)

@@ -2,74 +2,73 @@
 
 --<< Services
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService") 
+local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --<< Packages
-local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)   
+local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
 
---<< Network 
+--<< Network
 local clientNet = require(script.Parent.clientNet)
 
 local AttackRemote = clientNet.Attack
 
 --<< Types
 type device = "Keyboard" | "Phone" | "Controller"?
+type connection = {
+	signal: Signal.Signal<nil>,
+	fired: number,
+	amount: number,
+}
 
 --<< Public Variables
 local module = {
-	_connections = {} :: {
-		signal: Signal.Signal,
-		fired: number,
-		amount: number
-	}
+	_connections = {} :: { [Enum.KeyCode]: connection },
 }
 
 --<< Public Functions
 function module:Start()
+	UserInputService.InputBegan:Connect(function(input: InputObject, gameProcessedEvent: boolean)
+		if gameProcessedEvent then
+			return
+		end
 
-	UserInputService.InputBegan:Connect(function(input: InputObject, gameProcessedEvent: boolean) 
-
-		if gameProcessedEvent then return end
-		if input.KeyCode and self._connections[input.KeyCode] then
-			local info = self._connections[input.KeyCode]
-			info.signal:Fire()
-			info.fired += 1
+		local connection: connection? = self._connections[input.KeyCode]
+		if input.KeyCode and connection then
+			connection.signal:Fire()
+			connection.fired += 1
 		end
 	end)
 
-	local Mouse = Players.LocalPlayer:GetMouse() 
+	local Mouse = Players.LocalPlayer:GetMouse()
 	Mouse.Button1Down:Connect(function()
 		local character = Players.LocalPlayer.Character
-		
+
 		if character and character.PrimaryPart then
 			AttackRemote.Fire({
-				characterCFrame = character.PrimaryPart.CFrame, 
-				mousePosition = Mouse.Hit.Position
-			})			
+				characterCFrame = character.PrimaryPart.CFrame,
+				mousePosition = Mouse.Hit.Position,
+			})
 		end
-
 	end)
-
 end
 
-function module:getAllActiveInputs(): {Enum.KeyCode}
+function module:getAllActiveInputs(): { Enum.KeyCode }
 	local out = {}
-	
+
 	for input: Enum.KeyCode, _ in self._connections do
 		table.insert(out, input)
 	end
-	
-	return out	
+
+	return out
 end
 
 function module:bindToInput(input: Enum.KeyCode, callback: () -> ()): (...() -> ()) -> ()
-
-	if not self._connections[input]  then
+	if not self._connections[input] then
 		self._connections[input] = {
 			signal = Signal.new(),
 			fired = 0,
-			amount = 0
+			amount = 0,
 		}
 	end
 
@@ -77,7 +76,6 @@ function module:bindToInput(input: Enum.KeyCode, callback: () -> ()): (...() -> 
 	self._connections[input].amount += 1
 
 	return function(...: () -> ())
-
 		self._connections[input].amount -= 1
 		connection:Disconnect()
 
@@ -86,31 +84,24 @@ function module:bindToInput(input: Enum.KeyCode, callback: () -> ()): (...() -> 
 			self._connections[input] = nil
 		end
 
-		for _: number, cleanupFunction: () -> () in {...} do
+		for _: number, cleanupFunction: () -> () in { ... } do
 			cleanupFunction()
 		end
-
 	end
-
 end
 
-function module:getInputInformation(input: Enum.KeyCode): {amount: number, fired: number, signal: Signal.Signal<nil>}?
-	return if self._connections[input] then
-		self._connections[input]
-		else 
-		nil
+function module:getInputInformation(input: Enum.KeyCode): { amount: number, fired: number, signal: Signal.Signal<nil> }?
+	return if self._connections[input] then self._connections[input] else nil
 end
 
 function module:getDevice(): device
-	return if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
-		"Phone"
-		elseif UserInputService.KeyboardEnabled then
-		"Keyboard"
-		elseif UserInputService.GamepadEnabled then
-		"Controller"
+	return if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+		then "Phone"
+		elseif UserInputService.KeyboardEnabled then "Keyboard"
+		elseif UserInputService.GamepadEnabled then "Controller"
 		else
-		-- Default to keyboard
-		"Keyboard"
+			-- Default to keyboard
+			"Keyboard"
 end
 
 function module:isDevice(device: device): boolean
@@ -122,6 +113,3 @@ function module:isKeyDown(input: Enum.KeyCode): boolean
 end
 
 return module
-
-
-
