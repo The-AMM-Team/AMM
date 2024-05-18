@@ -2,26 +2,30 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --<< Packages
-local Fusion = require(ReplicatedStorage.Shared.Packages.fusion)
-local Hydrate = Fusion.Hydrate
-local Value = Fusion.Value
-local Spring = Fusion.Spring
+local Vide = require(ReplicatedStorage.Shared.Packages.vide)
+
+local source = Vide.source
+local mount = Vide.mount
+local apply = Vide.apply
+local spring = Vide.spring
 
 --<< Private Variables
-local fieldOfView = Value(70)
+local fieldOfView = source(70)
 
 --<< Public Variables
 local module = {}
 
 --<< Public Functions
 function module:Start()
-    Hydrate(workspace.CurrentCamera) {
-        FieldOfView = Spring(fieldOfView, 20, 0.75)
-    }
+	mount(function()
+		return apply(workspace.CurrentCamera)({
+			FieldOfView = spring(fieldOfView, 0.25, 0.5),
+		})
+	end)
 end
 
 function module:setCameraFieldOfView(amount: number)
-    fieldOfView:set(amount)
+	fieldOfView(amount)
 end
 
 return module

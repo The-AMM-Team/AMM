@@ -5,6 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --<< Modules
 local Input = require(script.Parent.Input)
 local Camera = require(script.Parent.Camera)
+local Background = require(script.Parent.Background)
 local Animation = require(script.Parent.Animation)
 local ClientState = require(script.Parent.ClientState)
 
@@ -12,158 +13,135 @@ local ClientState = require(script.Parent.ClientState)
 local clientNet = require(script.Parent.clientNet)
 
 --<< Packages
-local Fusion = require(ReplicatedStorage.Shared.Packages.fusion)
-local Value = Fusion.Value
-local Observer = Fusion.Observer
-local New = Fusion.New
-local Spring = Fusion.Spring
+local Vide = require(ReplicatedStorage.Shared.Packages.vide)
+local create = Vide.create
+local mount = Vide.mount
 
 --<< Private Functions
 local function createScreen(): ScreenGui
-    local screen = Instance.new("ScreenGui")
-    screen.ResetOnSpawn = false
-    screen.IgnoreGuiInset = true
-    screen.Parent = Players.LocalPlayer.PlayerGui
-    screen.Name = "MAIN"
-    return screen
+	return create("ScreenGui")({
+		ResetOnSpawn = false,
+		IgnoreGuiInset = true,
+		Parent = Players.LocalPlayer.PlayerGui,
+		Name = "MAIN",
+	}) :: ScreenGui
 end
+
 --<< Public Variables
 local module = {
-    screen = createScreen()
+	screen = createScreen(),
 }
 
 --<< Public Functions
 function module:Start()
-    
-    self:version()
-    self:client()
-    self:hotbar()
+	self:version()
+	self:client()
+	--self:hotbar()
 
-    self:crateOpening()
-
-    Input:bindToInput(Enum.KeyCode.E, function()
-        clientNet.OpenCrate.Fire("wooden")
+	-- testing stuff
+	Input:bindToInput(Enum.KeyCode.E, function()
+		local unmount = Background:createBackground({
+			damping = 0.75,
+			time = 0.5,
+			backgroundColor3 = Color3.fromRGB(25, 25, 25),
+			transparency = 0.25,
+			cleanup = function()
+				print("I've ended")
+			end,
+		})
+		Camera:setCameraFieldOfView(50)
+		task.wait(0.5)
+		unmount()
+		Camera:setCameraFieldOfView(75)
 	end)
-
 end
 
-function module:hotbar()
-    
-    local animation: () -> ()? = nil
+-- Binded Inputs module?
+-- function module:hotbar()
 
-    local equipped = Value(false)
-    Observer(equipped):onChange(function()  
-        if not equipped:get() and animation then
-            animation()
-        end
-    end)
+--     local animation: () -> ()? = nil
 
-    Observer(ClientState.round):onChange(function()  
-        if not ClientState.round:get() then
-            equipped:set(false)
-            clientNet.Unequip.Fire()
-        end
-    end)
+--     local equipped = Value(false)
+--     Observer(equipped):onChange(function()
+--         if not equipped:get() and animation then
+--             animation()
+--         end
+--     end)
 
-    Input:bindToInput(Enum.KeyCode.One, function()
-        local currentlyInRound = ClientState.round:get()
-        local currentRole =  ClientState.currentRole:get()
-        
-        if not currentlyInRound or currentRole == "innocent" then return end
+--     Observer(ClientState.round):onChange(function()
+--         if not ClientState.round:get() then
+--             equipped:set(false)
+--             clientNet.Unequip.Fire()
+--         end
+--     end)
 
-        if equipped:get() then
-            clientNet.Unequip.Fire()
-        else
-            if currentRole == "sheriff" then
-                animation = Animation:playAnimationOnPlayer(17224465048)
-            else
-                animation = Animation:playAnimationOnPlayer(16882019560)
-            end
-            
-            clientNet.Equip.Fire()
-        end
-        equipped:set(not equipped:get())
+--     Input:bindToInput(Enum.KeyCode.One, function()
+--         local currentlyInRound = ClientState.round:get()
+--         local currentRole =  ClientState.currentRole:get()
 
-    end)
+--         if not currentlyInRound or currentRole == "innocent" then return end
 
-end
+--         if equipped:get() then
+--             clientNet.Unequip.Fire()
+--         else
+--             if currentRole == "sheriff" then
+--                 animation = Animation:playAnimationOnPlayer(17224465048)
+--             else
+--                 animation = Animation:playAnimationOnPlayer(16882019560)
+--             end
 
-function module:darkBackground(): () -> ()
-    
-    local backgroundTransparency = Value(1)
+--             clientNet.Equip.Fire()
+--         end
+--         equipped:set(not equipped:get())
 
-    local frame = New "Frame" {
-        ZIndex = -1,
-        Parent = self.screen,
-        Size = UDim2.fromScale(1, 1),
-        BackgroundColor3 = Color3.fromRGB(20, 20, 20),
-        BackgroundTransparency = Spring(backgroundTransparency, 25, 0.75),
-    } 
-    
-    backgroundTransparency:set(0.1)
+--     end)
 
-    return function()
-        backgroundTransparency:set(1)
-        task.wait(2)
-        frame:Destroy()    
-    end 
-
-end
+-- end
 
 function module:version()
-    
-    local versionUI = require(script.Parent.UI.version)
+	local versionUI = require(ReplicatedStorage.Shared.UI.version)
 
-    local version = require(ReplicatedStorage.Shared.Version)
-    local device = Input:getDevice()
+	local version: string = require(ReplicatedStorage.Shared.Info.Version)
+	local device: ("Controller" | "Keyboard" | "Phone")? = Input:getDevice()
 
-    if device == "Phone" then
-        versionUI {
-            parent = self.screen,
-            version = version,
-            HorizontalAlignment = Enum.HorizontalAlignment.Center,
-            AnchorPoint = Vector2.new(0.5, 0),
-            Position =  UDim2.fromScale(0.5, 0),
-        }
-    else
-        versionUI {
-            parent = self.screen,
-            version = version,
-            HorizontalAlignment = Enum.HorizontalAlignment.Right,
-            AnchorPoint = Vector2.new(0.5, 1),
-            Position =  UDim2.fromScale(0.5, 1),
-        }
-    end
-    
+	if device == "Phone" then
+		mount(function()
+			return versionUI({
+				version = version,
+				HorizontalAlignment = Enum.HorizontalAlignment.Center,
+				AnchorPoint = Vector2.new(0.5, 0),
+				Position = UDim2.fromScale(0.5, 0),
+			})
+		end, self.screen)
+	else
+		mount(function()
+			return versionUI({
+				version = version,
+				HorizontalAlignment = Enum.HorizontalAlignment.Right,
+				AnchorPoint = Vector2.new(0.5, 1),
+				Position = UDim2.fromScale(0.5, 1),
+			})
+		end, self.screen)
+	end
 end
 
 function module:client()
-    local clientUI = require(script.Parent.UI.client)
+	local clientUI = require(ReplicatedStorage.Shared.UI.client)
 
-    clientUI {
-        parent = self.screen
-    }
+	clientUI({
+		parent = self.screen,
+	})
 end
 
 function module:crateOpening()
-    
-    local openCrate= require(script.Parent.UI.crateOpening)
 
-    ClientState.crateResult:Connect(function(item: string)  
-        local cleanup = self:darkBackground()
-        Camera:setCameraFieldOfView(50)
-        openCrate {
-            parent = self.screen,
-            rollingTime = 10,
-            crate = "wooden",
-            gyattItem = item,
-            cleanup = function()
-                Camera:setCameraFieldOfView(70)
-                cleanup()
-            end
-        }
-    end) 
+	-- local openCrate = require(script.Parent.UI.openCrate)
 
+	-- ClientState.crateResult:Connect(function(item: string)
+	--     mount(function()
+	--         return openCrate(item)
+	--     end, self.screen)
+	-- end)
 end
 
 return module
