@@ -9,13 +9,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install Aftman
+      - name: Install Aftman  
         uses: ok-nick/setup-aftman@v0.4.2
         with:
-          token: ${{ secrets.TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Selene
         run: selene src/
+
   formatting:
     name: Formatting
     runs-on: ubuntu-latest
@@ -26,7 +27,7 @@ jobs:
       - name: StyLua
         uses: JohnnyMorganz/stylua-action@v4
         with:
-          token: ${{ secrets.TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           args: src/
           version: latest
   
