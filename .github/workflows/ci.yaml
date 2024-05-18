@@ -1,0 +1,32 @@
+name: CLI
+on: [push, pull_request]
+  
+jobs:
+  linter:
+    name: Linter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+        with:
+          token: ${{ secrets.TOKEN }}
+
+      - name: Selene
+        run: selene src/
+  formatting:
+    name: Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: StyLua
+        uses: JohnnyMorganz/stylua-action@v4
+        with:
+          token: ${{ secrets.TOKEN }}
+          args: src/
+          version: latest
+  
