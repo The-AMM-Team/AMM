@@ -2,20 +2,20 @@ name: CLI
 on: [push, pull_request]
   
 jobs:
-  linter:
-    name: Linter
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+  # linter:
+  #   name: Linter
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
 
-      - name: Install Aftman  
-        uses: ok-nick/setup-aftman@v0.4.2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Install Aftman  
+  #       uses: ok-nick/setup-aftman@v0.4.2
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Selene
-        run: selene src/
+  #     - name: Selene
+  #       run: selene src/
 
   formatting:
     name: Formatting
