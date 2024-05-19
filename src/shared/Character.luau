@@ -1,32 +1,18 @@
---<< Services
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
---<< Modules
-local nameTag = require(ReplicatedStorage.UI.nameTag)
-
---<< Types
-local Types = require(ReplicatedStorage.Shared.Types)
-
 --<< Public Variables
 local module = {}
 
---<< Public Functions
--- Create A better way to mount tags
-function module:Start()
-	local Database = require(game:GetService("ServerScriptService").Server.Database)
+function module:bindCallbackToCharacter(player: Player, callback: (character: Model?) -> ()): RBXScriptConnection
+	local character: Model? = player.Character
+	if character then
+		callback(character)
+	end
 
-	Database.onDataLoaded:Connect(function(player: Player, data: Types.playerData)
-		player.CharacterAdded:Connect(function(newCharacter)
-			nameTag({
-				head = self:getBodyPartFromCharacter(player, "Head"),
-				playerName = player.Name,
-				roles = data.roles,
-			})
-		end)
+	return player.CharacterAdded:Connect(function(newCharacter: Model)
+		callback(newCharacter)
 	end)
 end
 
+--<< Public Functions
 function module:getPlayersHumanoid(player): Humanoid?
 	local character: Model? = player.Character
 	if character then

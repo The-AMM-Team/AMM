@@ -12,7 +12,7 @@ local cleanup = Vide.cleanup
 local action = Vide.action
 local create = Vide.create
 local source = Vide.source
-local switch = Vide.switch
+local derive = Vide.derive
 local mount = Vide.mount
 
 --<< Private Variables
@@ -30,14 +30,12 @@ local function createHitbox(player: Player, position: Vide.Source<Vector3>, clea
 			CanCollide = false,
 			Size = Vector3.new(3.5, 6, 3.5),
 			Position = position,
-			Transparency = switch(visible)({
-				[true] = function()
-					return 0.25
-				end,
-				[false] = function()
-					return 1
-				end,
-			}),
+			Transparency = derive(function()
+				return if visible() then
+					0.5
+				else
+					1
+			end),
 			action(function(hitbox: Part)
 				playerHitboxs[player] = hitbox
 				cleanup(function()
@@ -95,9 +93,10 @@ function module:playerAdded(player: Player)
 	playerConnections[player] = createHitbox(player, currentCharactersPosition, function()
 		connection:Disconnect()
 	end)
+	
 end
 
-function module:toggleHitboxs(toggle: boolean)
+function module:toggleHitboxs(toggle: boolean): ()
 	visible(toggle)
 end
 

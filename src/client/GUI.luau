@@ -14,6 +14,8 @@ local clientNet = require(script.Parent.clientNet)
 
 --<< Packages
 local Vide = require(ReplicatedStorage.Shared.Packages.vide)
+local source = Vide.source
+local effect = Vide.effect
 local create = Vide.create
 local mount = Vide.mount
 
@@ -45,7 +47,7 @@ function module:Start()
 			time = 0.5,
 			backgroundColor3 = Color3.fromRGB(25, 25, 25),
 			transparency = 0.25,
-			cleanup = function()
+			cleanup = function()	
 				print("I've ended")
 			end,
 		})
@@ -53,6 +55,29 @@ function module:Start()
 		task.wait(0.5)
 		unmount()
 		Camera:setCameraFieldOfView(75)
+	end)
+
+	local equipped = source(false)
+	local animation: () -> ()
+
+	mount(function()
+		effect(function()
+			if not ClientState.round() and equipped() then
+				animation()
+				equipped(false)
+			end
+		end)
+	end)
+
+	Input:bindToInput(Enum.KeyCode.One, function()
+		if equipped() then
+			animation()
+			clientNet.Unequip.Fire()
+		else
+			animation = Animation:playAnimationOnPlayer(16882019560)
+			clientNet.Equip.Fire()
+		end
+		equipped(not equipped())
 	end)
 end
 

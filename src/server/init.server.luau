@@ -1,7 +1,3 @@
---<< Services
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
--- Server
 local Database = require(script.Database)
 local Round = require(script.Round)
 local Roles = require(script.Roles)
@@ -16,8 +12,4 @@ Roles:Start()
 Weapon:Start()
 Hitboxs:Start()
 Commands:Start()
-
--- Shared
-local Character = require(ReplicatedStorage.Shared.Character)
-
-Character:Start()
+Items:Start()

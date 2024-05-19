@@ -29,6 +29,7 @@ local module: module = {
 	crateResult = Signal.new(),
 } :: module
 
+
 --<< Public Functions
 function module:Start()
 	clientNet.Round.SetCallback(function(roundInProgress: boolean)
@@ -37,7 +38,7 @@ function module:Start()
 			self.currentRole(nil)
 		end
 	end)
-
+	
 	clientNet.Role.SetCallback(function(role: string)
 		self.currentRole(role)
 	end)

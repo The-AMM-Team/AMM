@@ -28,6 +28,7 @@ local module = {
 
 --<< Public Functions
 function module:Start()
+
 	UserInputService.InputBegan:Connect(function(input: InputObject, gameProcessedEvent: boolean)
 		if gameProcessedEvent then
 			return
@@ -51,6 +52,7 @@ function module:Start()
 			})
 		end
 	end)
+	
 end
 
 function module:getAllActiveInputs(): { Enum.KeyCode }
