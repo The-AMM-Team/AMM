@@ -17,6 +17,9 @@ local serverNet = require(script.Parent.serverNet)
 local Vide = require(ReplicatedStorage.Shared.Packages.vide)
 local create = Vide.create
 
+--<< Types
+local Types = require(ReplicatedStorage.Shared.Types)
+
 --<< Private Variables
 local playersCurrentlyEquip = {}
 local currentPlayersMountedModelsInHand = {}
@@ -27,20 +30,9 @@ local module = {}
 
 --<< Public Functions
 function module:Start()
-	for _, player: Player in Players:GetPlayers() do
-		Character:bindCallbackToCharacter(player, function(_: Model?)
-			playersCurrentlyEquip[player] = false
-			local data = Database:getPlayerData(player)
-			if data then
-				self:mountGunOnHip(player, data.currentGun.name)
-				self:mountKnifeOnHip(player, data.currentKnife.name)
-			end
-		end)
-	end
 
-	Players.PlayerAdded:Connect(function(player: Player)
+	Database.onDataLoaded:Connect(function(player: Player, data: Types.playerData)  
 		Character:bindCallbackToCharacter(player, function(_: Model?)
-			local data = Database:getPlayerData(player)
 			if data then
 				self:mountGunOnHip(player, data.currentGun.name)
 				self:mountKnifeOnHip(player, data.currentKnife.name)

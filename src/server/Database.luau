@@ -19,7 +19,7 @@ local template = {
 		name = "lilFlame",
 	},
 
-	roles = { "contributer", "tester" },
+	roles = { "contributer", "tester", "developer" },
 	joinDate = os.time(),
 }
 

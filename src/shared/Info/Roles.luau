@@ -7,6 +7,12 @@ return {
 
 	["tester"] = {
 		name = "Tester",
-		color = Color3.fromRGB(31, 154, 255),
+		color = Color3.fromRGB(114, 255, 194),
 	},
+
+	["developer"] = {
+		name = "Developer",
+		color = Color3.fromRGB(66, 135, 245)
+	}
+
 }

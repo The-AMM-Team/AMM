@@ -1,4 +1,4 @@
----<< Services
+--<< Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --<< Modules
@@ -43,8 +43,7 @@ return function(props: props): Frame
                         VerticalAlignment = Enum.VerticalAlignment.Center
                     },
     
-                    indexes(source(props.roles), function(name: string, index: number)
-                        print(name, index)
+                    indexes(source(props.roles), function(name: () -> string, _: number)
                         return create "TextLabel" {
                             BackgroundTransparency = 1,
                             Size = UDim2.fromScale(0.4, 0.75),

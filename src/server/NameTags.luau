@@ -2,6 +2,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --<< Modules
+local Database = require(script.Parent.Database)
 local Character = require(ReplicatedStorage.Shared.Character)
 local nameTag = require(ReplicatedStorage.Shared.UI.nameTag)
 
@@ -15,9 +16,18 @@ local playerNameTags = {}
 local module = {}
 
 --<< Global Functions
+function module:Start()
+
+	Database.onDataLoaded:Connect(function(player: Player, data: Types.playerData)  
+		Character:bindCallbackToCharacter(player, function(_: Model?)  
+			self:connectToCharactercreateNameTag(player, data)
+		end)
+	end)
+
+end
+
 function module:connectToCharactercreateNameTag(player: Player, data: Types.playerData): ()
 	local character: Model? = player.Character
-
 	if character then
 		playerNameTags[player] = nameTag({
 			head = Character:getBodyPartFromCharacter(player, "Head"),
@@ -25,13 +35,6 @@ function module:connectToCharactercreateNameTag(player: Player, data: Types.play
 			roles = data.roles,
 		})
 	end
-	player.CharacterAdded:Connect(function(newCharacter: Model)
-		playerNameTags[player] = nameTag({
-			head = Character:getBodyPartFromCharacter(player, "Head"),
-			playerName = player.DisplayName,
-			roles = data.roles,
-		})
-	end)
 end
 
 function module:destoryNameTag(player: Player): ()
