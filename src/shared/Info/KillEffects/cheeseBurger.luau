@@ -31,7 +31,10 @@ return function(_: Player, deadPlayer: Player)
 
 		if humanoidRootPart then
 			local burger = createBurger(humanoidRootPart.Position)
-			Sound:playSoundOnPart(16647570, burger)
+			Sound:playSoundOnPart("cheeseBurger", burger, {
+				volume = 1,
+				async = true,
+			})
 		end
 	end
 end
