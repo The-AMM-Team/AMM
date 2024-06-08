@@ -7,44 +7,30 @@ local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --<< Packages
-local Vide = require(ReplicatedStorage.Shared.Packages.vide)
-local cleanup = Vide.cleanup
-local action = Vide.action
-local create = Vide.create
-local source = Vide.source
-local derive = Vide.derive
-local mount = Vide.mount
+local fusion = require(ReplicatedStorage.Shared.Packages.fusion)
+local peek = fusion.peek
+local scoped = fusion.scoped
 
 --<< Private Variables
-local visible = source(true)
-local playerConnections = {}
+local playerHitboxScope = scoped(fusion)
+local visible = fusion.Value({}, false)
+local playerConnections: { [Player]: fusion.Scope<typeof(fusion)> } = {}
 local playerHitboxs: { [Player]: Part } = {}
 
 --<< Private Functions
-local function createHitbox(player: Player, position: Vide.Source<Vector3>, cleanupFn: () -> ())
-	return mount(function()
-		return create("Part")({
-			Name = "HITBOX",
-			Color = Color3.fromRGB(255, 0, 0),
-			Anchored = true,
-			CanCollide = false,
-			Size = Vector3.new(3.5, 6, 3.5),
-			Position = position,
-			Transparency = derive(function()
-				return if visible() then
-					0.5
-				else
-					1
-			end),
-			action(function(hitbox: Part)
-				playerHitboxs[player] = hitbox
-				cleanup(function()
-					cleanupFn()
-					hitbox:Destroy()
-				end)
-			end),
-		})
-	end, workspace)
+local function createHitbox(scope: fusion.Scope<typeof(fusion)>, position: fusion.UsedAs<Vector3>): Part
+	return scope:New("Part")({
+		Parent = workspace,
+		Name = "HITBOX",
+		Color = Color3.fromRGB(255, 0, 0),
+		Anchored = true,
+		CanCollide = false,
+		Size = Vector3.new(3.5, 6, 3.5),
+		Position = position,
+		Transparency = playerHitboxScope:Computed(function(use, scope)
+			return if use(visible) then 0.5 else 1
+		end),
+	}) :: Part
 end
 
 --<< Global Functions
@@ -60,11 +46,15 @@ function module:Start()
 	end)
 
 	Players.PlayerRemoving:Connect(function(player: Player)
-		playerConnections[player]()
+		fusion.doCleanup(playerConnections[player])
 	end)
 end
 
 function module:playerAdded(player: Player)
+
+	local playerScope = playerHitboxScope:innerScope()
+	playerConnections[player] = playerScope
+
 	local character = player.Character
 	if character then
 		for _, instance: Instance in character:GetChildren() do
@@ -74,38 +64,41 @@ function module:playerAdded(player: Player)
 		end
 	end
 
-	player.CharacterAdded:Connect(function(newCharacter)
-		for _, instance: Instance in newCharacter:GetChildren() do
-			if instance:IsA("BasePart") then
-				instance.CollisionGroup = "Player"
+	table.insert(
+		playerScope,
+		player.CharacterAdded:Connect(function(newCharacter)
+			for _, instance: Instance in newCharacter:GetChildren() do
+				if instance:IsA("BasePart") then
+					instance.CollisionGroup = "Player"
+				end
 			end
-		end
-	end)
+		end)
+	)
 
-	local currentCharactersPosition = source(Vector3.new(0, 0, 0))
-	local connection = RunService.Heartbeat:Connect(function()
-		local character = player.Character
-		if character and character.PrimaryPart then
-			currentCharactersPosition(character.PrimaryPart.Position)
-		end
-	end)
+	local currentCharactersPosition = playerScope:Value(Vector3.new(0, 0, 0))
+	table.insert(
+		playerScope,
+		RunService.Heartbeat:Connect(function()
+			local character = player.Character
+			if character and character.PrimaryPart then
+				currentCharactersPosition:set(character.PrimaryPart.Position)
+			end
+		end)
+	)
 
-	playerConnections[player] = createHitbox(player, currentCharactersPosition, function()
-		connection:Disconnect()
-	end)
-	
+	playerHitboxs[player] = createHitbox(playerScope, currentCharactersPosition)
 end
 
-function module:toggleHitboxs(toggle: boolean): ()
-	visible(toggle)
+function module:toggleVisibleHitboxs(toggle: boolean): ()
+	visible:set(toggle)
 end
 
 function module:isHitboxShown(): boolean
-	return visible()
+	return peek(visible)
 end
 
 function module:getAllHitboxs(filter: (player: Player, hitbox: Part) -> ()): { Part }
-	local out = {}
+	local out: { Part } = {}
 	for player: Player, hitbox: Part in playerHitboxs do
 		if filter(player, hitbox) then
 			table.insert(out, hitbox)

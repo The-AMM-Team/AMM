@@ -6,8 +6,8 @@ local Types = require(ReplicatedStorage.Shared.Types)
 
 return {
 
-	name = "Test",
-	spawns = workspace.Map.Spawns,
+	name = "Hotel",
+	spawns = workspace.Hotel.Spawns,
 
 	components = {
 

@@ -2,25 +2,25 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --<< Packages
-local Vide = require(ReplicatedStorage.Shared.Packages.vide)
+local Fusion = require(ReplicatedStorage.Shared.Packages.fusion)
 
-local create = Vide.create
-local source = Vide.source
-local spring = Vide.spring
+local Children = Fusion.Children
+local OnEvent = Fusion.OnEvent
 
 --<< Types
 type props = {
-	version: number,
-	AnchorPoint: Vector2,
-	Position: UDim2,
-	HorizontalAlignment: Enum.HorizontalAlignment,
+	scope: Fusion.Scope<typeof(Fusion)>,
+	version: number?,
+	AnchorPoint: Vector2?,
+	Position: UDim2?,
+	HorizontalAlignment: Enum.HorizontalAlignment?,
 }
 
-return function(props: props): Frame
+return function(props: props): Fusion.Child
 
-	local TextTransparencySource = source(0.5)
+	local textTransparencyValue = props.scope:Value(0.5)
 
-	return create "Frame" {
+	return props.scope:New "Frame" {
 
 		Size = UDim2.fromScale(1, 0.045),
 		Position = props.Position,
@@ -28,31 +28,36 @@ return function(props: props): Frame
 
 		BackgroundTransparency = 1,
 
-		create "UIListLayout" {
-			FillDirection = Enum.FillDirection.Horizontal,
-			HorizontalAlignment = props.HorizontalAlignment,
-			VerticalAlignment = Enum.VerticalAlignment.Center,
-		},
+		[Children] = {
 
-		create "TextLabel" {
-			Size = UDim2.fromScale(0.065, 0.7),
+			props.scope:New "UIListLayout" {
+				FillDirection = Enum.FillDirection.Horizontal,
+				HorizontalAlignment = props.HorizontalAlignment,
+				VerticalAlignment = Enum.VerticalAlignment.Center,
+			},
 
-			BackgroundTransparency = 1,
+			props.scope:New "TextLabel" {
+				Size = UDim2.fromScale(0.065, 0.7),
+	
+				BackgroundTransparency = 1,
+	
+				Text = props.version or "nil :/",
+				TextScaled = true,
+				TextTransparency = props.scope:Spring(textTransparencyValue, 1, 0.5),
+				FontFace = Font.fromEnum(Enum.Font.GothamBold),
+				TextColor3 = Color3.fromRGB(255, 255, 255),
+	
+				[OnEvent "MouseEnter"] = function()
+					textTransparencyValue:set(0)
+				end,
+	
+				[OnEvent "MouseLeave"] = function()
+					textTransparencyValue:set(0.5)
+				end,
+			},
 
-			Text = props.version,
-			TextScaled = true,
-			TextTransparency = spring(TextTransparencySource, 1, 0.5),
-			FontFace = Font.fromEnum(Enum.Font.GothamBold),
-			TextColor3 = Color3.fromRGB(255, 255, 255),
-
-			MouseEnter = function()
-				TextTransparencySource(0)
-			end,
-
-			MouseLeave = function()
-                TextTransparencySource(0.5)
-			end,
 		}
+
 	}
 
 end

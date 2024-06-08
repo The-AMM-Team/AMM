@@ -83,6 +83,10 @@ function module:playerAdded(player: Player)
 	end)
 end
 
+function module:getAllPlayersKeeps(): {[Player]: any}
+	return loadedKeeps
+end
+
 function module:getPlayerData(player: Player): Types.playerData?
 	local keep = self:getKeep(player)
 	return if keep then keep.Data else nil

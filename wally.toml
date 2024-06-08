@@ -6,7 +6,7 @@ realm = "shared"
 
 [dependencies]
 Red = "red-blox/red@2.3.0"
-vide = "centau/vide@0.2.0"
+fusion = "plainsour/lemon@0.3.0-dev.5.6"
 lemonsignal = "data-oriented-house/lemonsignal@1.10.0"
 
 [server-dependencies]

@@ -6,10 +6,15 @@ local Database = require(script.Parent.Database)
 local Character = require(ReplicatedStorage.Shared.Character)
 local nameTag = require(ReplicatedStorage.Shared.UI.nameTag)
 
+--<< Packages
+local Fusion = require(ReplicatedStorage.Shared.Packages.fusion)
+local scoped = Fusion.scoped
+
 --<< Types
 local Types = require(ReplicatedStorage.Shared.Types)
 
 --<< Private Variables
+local playerNameTagScope = scoped(Fusion) 
 local playerNameTags = {}
 
 --<< Global Variables
@@ -27,11 +32,11 @@ function module:Start()
 end
 
 function module:connectToCharactercreateNameTag(player: Player, data: Types.playerData): ()
-	local character: Model? = player.Character
-	if character then
-		playerNameTags[player] = nameTag({
-			head = Character:getBodyPartFromCharacter(player, "Head"),
-			playerName = player.DisplayName,
+	local head: BasePart? = Character:getBodyPartFromCharacter(player, "Head")
+	if head then
+		playerNameTags[player] = nameTag(playerNameTagScope, {
+			head = head,
+			player = player,
 			roles = data.roles,
 		})
 	end

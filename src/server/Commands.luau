@@ -14,7 +14,7 @@ local module = {
 	privateRoutes = {
 
 		["/th"] = function()
-			Hitboxs:toggleHitboxs(not Hitboxs:isHitboxShown())
+			Hitboxs:toggleVisibleHitboxs(not Hitboxs:isHitboxShown())
 		end,
 	},
 }

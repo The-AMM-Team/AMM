@@ -8,23 +8,27 @@ local clientNet = require(script.Parent.clientNet)
 
 --<< Packages
 local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
-local Vide = require(ReplicatedStorage.Shared.Packages.vide)
-local source = Vide.source
+local Fusion = require(ReplicatedStorage.Shared.Packages.fusion)
+local scoped = Fusion.scoped
+local peek = Fusion.peek
 
 --<< Types
 type module = {
-	round: Vide.Source<boolean>,
-	currentRole: Vide.Source<string?>,
+	round: Fusion.UsedAs<boolean>,
+	currentRole: Fusion.UsedAs<string?>,
 	crateResult: Signal.Signal<string>,
 
 	Start: (self: module) -> (),
 }
 
+--<< Private Variables
+local clientStateScope = scoped(Fusion)
+
 --<< Public Variables
 local module: module = {
 
-	round = source(false),
-	currentRole = source(nil),
+	round = clientStateScope:Value(false),
+	currentRole = clientStateScope:Value(nil),
 
 	crateResult = Signal.new(),
 } :: module
@@ -32,15 +36,16 @@ local module: module = {
 
 --<< Public Functions
 function module:Start()
+
 	clientNet.Round.SetCallback(function(roundInProgress: boolean)
-		self.round(roundInProgress)
-		if not self.round() then
-			self.currentRole(nil)
+		self.round:set(roundInProgress)
+		if not peek(self.round) then
+			self.currentRole:set(nil)
 		end
 	end)
 	
 	clientNet.Role.SetCallback(function(role: string)
-		self.currentRole(role)
+		self.currentRole:set(role)
 	end)
 
 	clientNet.CrateResult.SetCallback(function(item: string)

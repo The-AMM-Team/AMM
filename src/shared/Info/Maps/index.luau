@@ -1,5 +1,5 @@
-local Test = require(script.Parent.Test)
+local Hotel = require(script.Parent.Hotel)
 
 return {
-	Test,
+	Hotel,
 }
