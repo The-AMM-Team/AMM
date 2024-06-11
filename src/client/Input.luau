@@ -10,7 +10,7 @@ local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
 
 --<< Network
 local clientNet = require(script.Parent.clientNet)
-
+local InputRemote = clientNet.Input
 local AttackRemote = clientNet.Attack
 
 --<< Types
@@ -28,8 +28,9 @@ local module = {
 
 --<< Public Functions
 function module:Start()
-
 	UserInputService.InputBegan:Connect(function(input: InputObject, gameProcessedEvent: boolean)
+		InputRemote.Fire()
+
 		if gameProcessedEvent then
 			return
 		end
@@ -52,7 +53,6 @@ function module:Start()
 			})
 		end
 	end)
-	
 end
 
 function module:getAllActiveInputs(): { Enum.KeyCode }

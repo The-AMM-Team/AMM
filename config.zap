@@ -11,6 +11,12 @@ event Attack = {
 	},
 }
 
+event Input = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+}
+
 event Equip = {
 	from: Client,
 	type: Reliable,
