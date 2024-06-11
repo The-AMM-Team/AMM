@@ -17,10 +17,10 @@ local Types = require(ReplicatedStorage.Shared.Types)
 local playerNameTagScope = scoped(Fusion) 
 local playerNameTags = {}
 
---<< Global Variables
+--<< Public Variables
 local module = {}
 
---<< Global Functions
+--<< Public Functions
 function module:Start()
 
 	Database.onDataLoaded:Connect(function(player: Player, data: Types.playerData)  

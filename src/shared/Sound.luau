@@ -38,10 +38,10 @@ local function createSound(id: number, soundSettings: soundSettings): Sound
 	return sound
 end
 
---<< Global Variables
+--<< Public Variables
 local module = {}
 
---<< Global Functions
+--<< Public Functions
 function module:loadAllSounds()
 	local allSoundInstances: { Sound } = {}
 	for name: string, id: number in sounds do

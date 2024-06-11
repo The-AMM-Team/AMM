@@ -33,9 +33,10 @@ local function createHitbox(scope: fusion.Scope<typeof(fusion)>, position: fusio
 	}) :: Part
 end
 
---<< Global Functions
+--<< Public Variables
 local module = {}
 
+--<< Public Functions
 function module:Start()
 	for _, player: Player in Players:GetPlayers() do
 		self:playerAdded(player)

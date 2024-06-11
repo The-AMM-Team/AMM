@@ -1,5 +1,3 @@
---!strict
-
 --<< Services
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -11,7 +9,6 @@ local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
 --<< Network
 local clientNet = require(script.Parent.clientNet)
 local InputRemote = clientNet.Input
-local AttackRemote = clientNet.Attack
 
 --<< Types
 type device = "Keyboard" | "Phone" | "Controller"?
@@ -42,17 +39,6 @@ function module:Start()
 		end
 	end)
 
-	local Mouse = Players.LocalPlayer:GetMouse()
-	Mouse.Button1Down:Connect(function()
-		local character = Players.LocalPlayer.Character
-
-		if character and character.PrimaryPart then
-			AttackRemote.Fire({
-				characterCFrame = character.PrimaryPart.CFrame,
-				mousePosition = Mouse.Hit.Position,
-			})
-		end
-	end)
 end
 
 function module:getAllActiveInputs(): { Enum.KeyCode }

@@ -5,14 +5,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --<< Modules
 local Character = require(ReplicatedStorage.Shared.Character)
 
---<< Remotes
-
---<< Packages
-
---<< Types
-
---<< Private Variables
-
 --<< Private Functions
 local function createAnimation(id: number): Animation
     local out: Animation = Instance.new("Animation")

@@ -39,13 +39,6 @@ event Round = {
 	},
 }
 
-event Role = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-	data: string,
-}
-
 event OpenCrate = {
 	from: Client,
 	type: Reliable,

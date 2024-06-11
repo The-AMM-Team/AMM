@@ -14,7 +14,6 @@ local serverNet = require(script.Parent.serverNet)
 
 --<< Packages
 local Fusion = require(ReplicatedStorage.Shared.Packages.fusion)
-
 local scoped = Fusion.scoped
 
 --<< Types

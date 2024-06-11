@@ -12,8 +12,10 @@ local timeToKick = (60 * 19)
 local playersInputTimers = {}
 local playersConnections = {}
 
+--<< Public Variables
 local module = {}
 
+--<< Public Functions
 function module:Start()
 	for _: number, player: Player in Players:GetPlayers() do
 		self:playerAdded(player)

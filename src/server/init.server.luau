@@ -1,3 +1,4 @@
+--<< Modules
 local Database = require(script.Database)
 local Round = require(script.Round)
 local Roles = require(script.Roles)
@@ -8,6 +9,7 @@ local Items = require(script.Items)
 local NameTags = require(script.NameTags)
 local Afk = require(script.Afk)
 
+--<< Start Module
 Database:Start()
 Round:Start()
 Roles:Start()
