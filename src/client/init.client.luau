@@ -1,12 +1,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ClientState = require(script.ClientState)
 local Input = require(script.Input)
 local Camera = require(script.Camera)
-local Sound = require(ReplicatedStorage.Shared.Sound) 
+local Sound = require(ReplicatedStorage.Shared.Sound)
+local Round = require(script.Round)
 
 Sound:loadAllSounds()
 
-ClientState:Start()
+Round:Start()
 Input:Start()
 Camera:Start()

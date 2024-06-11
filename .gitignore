@@ -6,7 +6,7 @@
 /*.rbxl.lock
 
 #UI Stories
-/src/client/UI/stories
+/src/shared/stories
 
 #Network Build
 /src/client/clientNet.luau

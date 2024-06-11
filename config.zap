@@ -33,7 +33,10 @@ event Round = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
-	data: boolean,
+	data: struct {
+		started: boolean,
+		role: string,
+	},
 }
 
 event Role = {
