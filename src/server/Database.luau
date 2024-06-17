@@ -7,10 +7,23 @@ local RunService = game:GetService("RunService")
 local Datakeep = require(ReplicatedStorage.Shared.ServerPackages.datakeep)
 local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
 
+--<< Network
+local serverNet = require(script.Parent.serverNet)
+local loadSettings = serverNet.LoadSettings
+local setSetting = serverNet.SetSetting
+
+--<< Types
+local Types = require(ReplicatedStorage.Shared.Types)
+
 --<< Private Variables
-local template = {
+local template: Types.playerData = {
 
 	coins = 0,
+
+	settings = {
+		music = false,
+		sound = true,
+	},
 
 	currentKnife = {
 		name = "flameDragon",
@@ -26,10 +39,6 @@ local template = {
 local KeepStore = Datakeep.GetStore(if RunService:IsStudio() then "TEMP" else "MAIN", template):expect()
 
 local loadedKeeps = {}
-
---<< Types
-local Types = require(ReplicatedStorage.Shared.Types)
-
 --<< Public Variables
 local module = {
 	onDataLoaded = Signal.new(),
@@ -50,6 +59,16 @@ function module:Start()
 
 		if keep then
 			keep:Release()
+		end
+	end)
+
+	setSetting.SetCallback(function(player: Player, setting: { data: boolean, name: string })
+		local data: Types.playerData? = self:getPlayerData(player)
+		if data then
+			local currentSettingValue: boolean? = data.settings[setting.name]
+			if currentSettingValue then
+				currentSettingValue = setting.data
+			end
 		end
 	end)
 end
@@ -79,11 +98,13 @@ function module:playerAdded(player: Player)
 		loadedKeeps[player] = keep
 		keep.Data = template
 
+		loadSettings.Fire(player, keep.Data.settings)
+
 		self.onDataLoaded:Fire(player, keep.Data)
 	end)
 end
 
-function module:getAllPlayersKeeps(): {[Player]: any}
+function module:getAllPlayersKeeps(): { [Player]: any }
 	return loadedKeeps
 end
 

@@ -13,7 +13,6 @@ local module = {}
 
 function module:Start()
 	clientNet.Round.SetCallback(function(roundInfo)
-		warn(roundInfo)
 		if roundInfo.started then
 			role(fusion.scoped(fusion), {
 				role = roundInfo.role,

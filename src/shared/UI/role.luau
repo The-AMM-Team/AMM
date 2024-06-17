@@ -90,45 +90,51 @@ return function(scope: fusion.Scope<typeof(fusion)>, props: props)
 			task.wait(0.5)
 			titleVisible:set(true)
 			titleWords:set("You")
-			Sound:playLocalSound("kick boom 1", {
+			Sound:playSound("kick boom 1", {
 				async = true,
+				group = "SFX",
 				volume = 1,
 			})
 			titleRotation:addVelocity(25)
 			task.wait(1)
 			titleWords:set("You Are")
-			Sound:playLocalSound("kick boom 1", {
+			Sound:playSound("kick boom 1", {
 				async = true,
+				group = "SFX",
 				volume = 1,
 			})
 			titleRotation:addVelocity(25)
 			task.wait(0.75)
 			roleText:set(".")
-			Sound:playLocalSound("click 1", {
+			Sound:playSound("click 1", {
 				async = true,
+				group = "SFX",
 				volume = 0.75,
 			})
 			task.wait(0.5)
 			roleText:set(". .")
-			Sound:playLocalSound("click 1", {
+			Sound:playSound("click 1", {
 				async = true,
+				group = "SFX",
 				volume = 0.75,
 			})
 			task.wait(0.5)
 			roleText:set(". . .")
-			Sound:playLocalSound("click 1", {
+			Sound:playSound("click 1", {
 				async = true,
+				group = "SFX",
 				volume = 0.75,
 			})
 			task.wait(0.5)
 			roleText:set(string.upper(props.role))
 			roleTextColor:set(Role[props.role])
 			roleSize:set(UDim2.fromScale(1, 0.4))
-			Sound:playLocalSound("yay", {
+			Sound:playSound("yay", {
 				async = true,
+				group = "SFX",
 				volume = 1,
 			})
-			task.wait(3)
+			task.wait(6)
 			sizeValue:set(UDim2.fromScale(0, 0))
 			task.wait(1)
 			fusion.doCleanup(scope)

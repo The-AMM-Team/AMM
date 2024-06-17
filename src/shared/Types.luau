@@ -3,9 +3,16 @@ export type component = {
 	unload: () -> (),
 }
 
+export type settings = {
+	music: boolean,
+	sound: boolean,
+}
+
 export type playerData = {
 
 	coins: number,
+
+	settings: settings,
 
 	currentKnife: {
 		name: string,
@@ -15,7 +22,7 @@ export type playerData = {
 	},
 
 	roles: { string },
-	joinData: number,
+	joinDate: number,
 }
 
 return nil

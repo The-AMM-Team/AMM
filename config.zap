@@ -17,6 +17,23 @@ event Input = {
 	call: SingleAsync,
 }
 
+event LoadSettings = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: map {[string]: boolean}
+}
+
+event SetSetting = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		name: string,
+		data: boolean
+	}
+}
+
 event Equip = {
 	from: Client,
 	type: Reliable,

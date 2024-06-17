@@ -5,9 +5,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --<< Modules
 local Chance = require(ReplicatedStorage.Shared.Chance)
 
---<< Remotes
-local serverNet = require(script.Parent.serverNet)
-
 --<< Packages
 local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
 
@@ -55,13 +52,9 @@ function module:generateRoles(playersInRound: { Player })
 
 	local murderer: Player = Chance(self.playersCurrentChanceOfMurderer)
 	table.remove(playersInRound, table.find(playersInRound, murderer))
-	serverNet.Role.Fire(murderer, "murderer")
 
 	local sheriff: Player = playersInRound[math.random(1, #playersInRound)]
 	table.remove(playersInRound, table.find(playersInRound, sheriff))
-	serverNet.Role.Fire(sheriff, "sheriff")
-
-	serverNet.Role.FireList(playersInRound, "innocent")
 
 	self.currentPlayersRoles = createRoleTables(sheriff, murderer, playersInRound)
 	self.onRolesAdded:Fire(table.clone(self.currentPlayersRoles))
