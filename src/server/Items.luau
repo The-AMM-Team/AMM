@@ -58,10 +58,11 @@ function module:Start(): ()
 
 		--<< Mounts the players knifes and gun on side
 		Character:bindCallbackToCharacter(player, function(_: Model?)
-			-- if data then
-			-- 	self:mountItemToPlayer(player, data.currentKnife.name, "LowerTorso", "RootRigAttachment")
-			-- 	self:mountItemToPlayer(player, data.currentGun.name, "LowerTorso", "RootRigAttachment")
-			-- end
+			warn(data)
+			if data then
+				self:mountItemToPlayer(player, data.currentKnife.name, "LowerTorso", "RootRigAttachment")
+				self:mountItemToPlayer(player, data.currentGun.name, "LowerTorso", "RootRigAttachment")
+			end
 		end)
 
 	end
@@ -72,11 +73,13 @@ function module:Start(): ()
 			mountedItems = {},
 		}
 
+		warn(player, data)
+
 		Character:bindCallbackToCharacter(player, function(_: Model?)
-			-- if data then
-			-- 	self:mountItemToPlayer(player, data.currentKnife.name, "LowerTorso", "RootRigAttachment", true)
-			-- 	self:mountItemToPlayer(player, data.currentGun.name, "LowerTorso", "RootRigAttachment", true)
-			-- end
+			if data then
+				self:mountItemToPlayer(player, data.currentKnife.name, "LowerTorso", "RootRigAttachment", true)
+				self:mountItemToPlayer(player, data.currentGun.name, "LowerTorso", "RootRigAttachment", true)
+			end
 		end)
 	end)
 

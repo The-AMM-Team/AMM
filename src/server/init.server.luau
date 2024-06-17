@@ -6,7 +6,6 @@ local Weapon = require(script.Weapon)
 local Hitboxs = require(script.Hitboxs)
 local Commands = require(script.Commands)
 local Items = require(script.Items)
-local NameTags = require(script.NameTags)
 local Afk = require(script.Afk)
 
 --<< Start Module
@@ -17,6 +16,5 @@ Weapon:Start()
 Hitboxs:Start()
 Commands:Start()
 Items:Start()
-NameTags:Start()
 Afk:Start()
 

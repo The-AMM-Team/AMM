@@ -56,6 +56,13 @@ event Round = {
 	},
 }
 
+event Coins = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: i32,
+}
+
 event OpenCrate = {
 	from: Client,
 	type: Reliable,

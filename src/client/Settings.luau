@@ -16,6 +16,9 @@ local clientNet = require(script.Parent.clientNet)
 local loadSettingsRemote = clientNet.LoadSettings
 local setSettingRemote = clientNet.SetSetting
 
+--<< Private Variables
+local loadedSettings = fusion.Value({}, false)
+
 local module = {}
 
 function module:Start()
@@ -39,7 +42,7 @@ function module:Start()
 					Sound:playSound("UI Click 1", {
 						async = true,
 						group = "SFX",
-						volume = 1,
+						volume = 1,	
 					})
 				end,
 				defaultValue = settings["music"],
@@ -58,6 +61,8 @@ function module:Start()
 				defaultValue = settings["sound"],
 			},
 		})
+
+		loadedSettings:set(true)
 	end)
 
 	Input:bindToInput(Enum.KeyCode.T, function()
@@ -83,6 +88,10 @@ function module:toggleSoundEffects(on: boolean)
 		name = "sound",
 		data = on,
 	})
+end
+
+function module:settingsLoaded(): boolean
+	return peek(loadedSettings)
 end
 
 return module

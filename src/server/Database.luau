@@ -9,6 +9,7 @@ local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
 
 --<< Network
 local serverNet = require(script.Parent.serverNet)
+local Coins = serverNet.Coins
 local loadSettings = serverNet.LoadSettings
 local setSetting = serverNet.SetSetting
 
@@ -37,6 +38,12 @@ local template: Types.playerData = {
 }
 
 local KeepStore = Datakeep.GetStore(if RunService:IsStudio() then "TEMP" else "MAIN", template):expect()
+KeepStore.Wrapper = {
+	setCoins = function(keep, player: Player, amount: number)
+		keep.Data.coins = amount	
+		Coins.Fire(player, amount)
+	end
+}
 
 local loadedKeeps = {}
 --<< Public Variables
@@ -97,10 +104,12 @@ function module:playerAdded(player: Player)
 
 		loadedKeeps[player] = keep
 		keep.Data = template
+		
+		self.onDataLoaded:Fire(player, keep.Data)
 
 		loadSettings.Fire(player, keep.Data.settings)
+		Coins.Fire(player, keep.Data.coins)
 
-		self.onDataLoaded:Fire(player, keep.Data)
 	end)
 end
 
