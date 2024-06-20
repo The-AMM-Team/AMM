@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 return {
 
 	name = "Hotel",
+	coinSpawns = workspace.Hotel.CoinSpawns,
 	spawns = workspace.Hotel.Spawns,
 
 	components = {

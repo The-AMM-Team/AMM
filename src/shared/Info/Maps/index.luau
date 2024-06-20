@@ -7,6 +7,7 @@ local Types = require(ReplicatedStorage.Shared.Types)
 export type map = {
 
 	name: string,
+	coinSpawns: Folder,
 	spawns: Folder,
 	components: { Types.component },
 

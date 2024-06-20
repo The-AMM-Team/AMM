@@ -112,11 +112,16 @@ function module:playerAdded(player: Player)
 			end
 
 			keeps[player] = keep
+			self.onDataLoaded:Fire(player, keep.Data)
 
 			Coins.Fire(player, keep.Data.coins)
 			loadSettings.Fire(player, keep.Data.settings)
 		end)
 		:catch(warn)
+end
+
+function module:getAllPlayersKeeps() 
+	return keeps
 end
 
 function module:getKeep(player)

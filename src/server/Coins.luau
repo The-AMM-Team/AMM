@@ -51,13 +51,13 @@ function module:spawnInCurrentMap()
 	spawningThread = task.spawn(function()
 		while true do
 			task.wait(0.5)
-			local areaPart = getRandomArea(mapInfo.spawns:GetChildren())
+			local areaPart = getRandomArea(mapInfo.coinSpawns:GetChildren())
 			self:spawnCoin(
 				areaPart.Position
 					+ Vector3.new(
-						math.random(-areaPart.Size.X, areaPart.Size.X),
-						1,
-						math.random(-areaPart.Size.Z, areaPart.Size.Z)
+						math.random(-areaPart.Size.X/2, areaPart.Size.X/2),
+						1.5,
+						math.random(-areaPart.Size.Z/2, areaPart.Size.Z/2)
 					)
 			)
 		end

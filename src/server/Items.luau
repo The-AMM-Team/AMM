@@ -49,7 +49,7 @@ local module = {}
 function module:Start(): ()
 
 	for player: Player, _ in Database:getAllPlayersKeeps() do
-		local data = Database:getPlayerData(player)
+		local data = Database:getKeepData(player)
 		
 		playersItemInfomation[player] = {
 			cooldown = false,
@@ -58,7 +58,7 @@ function module:Start(): ()
 
 		--<< Mounts the players knifes and gun on side
 		Character:bindCallbackToCharacter(player, function(_: Model?)
-			warn(data)
+
 			if data then
 				self:mountItemToPlayer(player, data.currentKnife.name, "LowerTorso", "RootRigAttachment")
 				self:mountItemToPlayer(player, data.currentGun.name, "LowerTorso", "RootRigAttachment")
@@ -72,8 +72,6 @@ function module:Start(): ()
 			cooldown = false,
 			mountedItems = {},
 		}
-
-		warn(player, data)
 
 		Character:bindCallbackToCharacter(player, function(_: Model?)
 			if data then
