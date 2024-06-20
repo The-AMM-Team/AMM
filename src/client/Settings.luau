@@ -22,9 +22,7 @@ local loadedSettings = fusion.Value({}, false)
 local module = {}
 
 function module:Start()
-
 	loadSettingsRemote.SetCallback(function(settings)
-		
 		Sound:createSoundGroup("music")
 		Sound:toggleGroup("music", settings.music)
 
@@ -42,7 +40,7 @@ function module:Start()
 					Sound:playSound("UI Click 1", {
 						async = true,
 						group = "SFX",
-						volume = 1,	
+						volume = 1,
 					})
 				end,
 				defaultValue = settings["music"],

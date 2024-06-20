@@ -4,10 +4,12 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --<< Remotes
 local clientNet = require(script.Parent.clientNet)
 
+--<< Modules
+local role = require(ReplicatedStorage.Shared.UI.role)
+local Coins = require(script.Parent.Coins)
+
 --<< Packages
 local fusion = require(ReplicatedStorage.Shared.Packages.fusion)
-
-local role = require(ReplicatedStorage.Shared.UI.role)
 
 local module = {}
 
@@ -17,6 +19,8 @@ function module:Start()
 			role(fusion.scoped(fusion), {
 				role = roundInfo.role,
 			})
+		else
+			Coins:clearAllCoins()
 		end
 	end)
 end

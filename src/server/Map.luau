@@ -23,8 +23,6 @@ function module:loadMap(players)
 	end
 
 	self:spawnPlayersInsideMap(players)
-
-	--TODO add coin spawning later
 end
 
 function module:unloadMap()
@@ -32,9 +30,12 @@ function module:unloadMap()
 		for _, component in currentMap.components do
 			component:unload()
 		end
-
 		currentMap = nil
 	end
+end
+
+function module:getCurrentMap(): ListOfMaps.map?
+	return currentMap
 end
 
 function module:spawnPlayersInsideMap(players: { Player }): ()

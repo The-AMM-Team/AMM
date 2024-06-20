@@ -1,24 +1,20 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+--<< Modules
+local FormatNumbers = require(ReplicatedStorage.Shared.FormatNumbers)
+
 --<< Packages
 local fusion = require(ReplicatedStorage.Shared.Packages.fusion)
 local Children = fusion.Children
 local scoped = fusion.scoped
 
-local short = {"", "K", "M", "B", "T"} --
-
-local function formatNumbers(amount: number): string?
-	local str = tostring(math.floor(amount))
-	return string.sub(str, 1, ((#str+2)%3) + 1)..short[math.floor((#str-1)/3) + 1]
-end
-
-return function(coinAmountValue: fusion.UsedAs<number>, hide: fusion.UsedAs<boolean>): () -> ()
+return function(coinAmountValue: fusion.UsedAs<number>, hide: fusion.UsedAs<boolean>): ()
 	
 	local coinScope = scoped(fusion)
 
 	local sizeSpring = coinScope:Spring(UDim2.fromScale(0.394, 1.97), 25, 0.5)
-	local positionSpring = coinScope:Spring(UDim2.fromScale(0.625, 0.5), 25, 0.5)
+	local positionSpring = coinScope:Spring(UDim2.fromScale(0.7, 0.5), 25, 0.5)
 
 	coinScope:Observer(coinAmountValue):onChange(function()
 		sizeSpring:addVelocity(UDim2.fromScale(0.4, 2))
@@ -54,12 +50,13 @@ return function(coinAmountValue: fusion.UsedAs<number>, hide: fusion.UsedAs<bool
 						Position = positionSpring,
 						Text = coinScope:Computed(function(use, scope)
 							return if use(coinAmountValue) then
-								formatNumbers(use(coinAmountValue))
+								FormatNumbers(use(coinAmountValue))
 							else
 								"loading..."
 						end),
+						TextXAlignment = Enum.TextXAlignment.Left,
 						TextColor3 = Color3.fromHex("ffe394"),
-						FontFace = Font.fromEnum(Enum.Font.GothamBold),
+						FontFace = Font.fromEnum(Enum.Font.MontserratBlack),
 						TextScaled = true,
 		
 						[Children] = {

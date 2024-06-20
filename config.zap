@@ -11,6 +11,23 @@ event Attack = {
 	},
 }
 
+event CoinSpawn = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		position: i32[0..3],
+		uuid: string,
+	},
+}
+
+event CoinDestroy = {
+	from: Server,
+	type: Reliable,
+	call: ManyAsync,
+	data: string
+}
+
 event Input = {
 	from: Client,
 	type: Reliable,
@@ -58,9 +75,9 @@ event Round = {
 
 event Coins = {
 	from: Server,
-	type: Reliable,
+	type: Unreliable,
 	call: SingleAsync,
-	data: i32,
+	data: u32,
 }
 
 event OpenCrate = {

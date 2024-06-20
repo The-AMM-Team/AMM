@@ -1,11 +1,12 @@
 local module = {}
 
 function module:timeFunctionCall(func: (...any) -> (), ...: any): number
-    local startTime = os.clock()
+	local startTime = os.clock()
 
-    func(...)
+	func(...)
 
-    return os.clock() - startTime
+	return os.clock() - startTime
 end
 
 return module
+

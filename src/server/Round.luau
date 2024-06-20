@@ -5,6 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --<< Modules
 local Roles = require(script.Parent.Roles)
 local Map = require(script.Parent.Map)
+local Coins = require(script.Parent.Coins)
 
 --<< Packages
 local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
@@ -14,8 +15,8 @@ local serverNet = require(script.Parent.serverNet)
 local roundRemote = serverNet.Round
 
 --<< Private Variables
-local intermissionTime = 5
-local roundTime = 10
+local intermissionTime = 60
+local roundTime = 60 * 10
 
 local playersInRound = {}
 local playersInLobby = {}
@@ -240,6 +241,8 @@ function module:roundCleanup(): ()
 	self:addPlayersToLobby(playersInCurrentRound)
 	Roles:resetAllRoles()
 	Map:unloadMap()
+	Coins:stopSpawningCoins()
+	Coins:clearAllCoins()
 end
 
 --[[
@@ -323,6 +326,9 @@ function module:startRound(players: { Player }): ()
 	--// send this info to the client b*tch
 	Map:loadMap(players)
 
+	--// Start spawning them coins
+	Coins:spawnInCurrentMap()
+
 	--// Fire remote O-O
 	for _: number, player: Player in players do
 		roundRemote.Fire(player, {
@@ -369,4 +375,3 @@ function module:startRound(players: { Player }): ()
 end
 
 return module
-

@@ -10,4 +10,4 @@ fusion = "plainsour/lemon@0.3.0-dev.5.6"
 lemonsignal = "data-oriented-house/lemonsignal@1.10.0"
 
 [server-dependencies]
-datakeep = "noahrepublic/datakeep@3.1.1"
+datakeep = "noahrepublic/datakeep@3.1.2"

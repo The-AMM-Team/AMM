@@ -19,6 +19,8 @@ type soundSettings = {
 	playbackSpeed: number?,
 	async: boolean?,
 	onInterupt: () -> ()?,
+	onComplete: () -> ()?,
+	parent: Instance?,
 }
 
 type soundGroupInfo = {
@@ -47,6 +49,9 @@ local sounds: { [string]: number } = {
 	["Piano Bar jazz"] = 1841979451,
 	["Nocturne Opus 9 C"] = 1848028342,
 	["Solo Piano - Fur Elise - Remastered"] = 9046645246,
+
+	--<< Collecting
+	["Coin Collect"] = 1169755927,
 
 	--<< Misc
 	["yay"] = 8304443672,
@@ -79,7 +84,9 @@ end
 
 local function playSound(sound: Sound, onfinish: () -> ()?)
 	sound:Play()
-	repeat task.wait() until not sound.Playing or not sound.Parent
+	repeat
+		task.wait()
+	until not sound.Playing or not sound.Parent
 	if onfinish then
 		onfinish()
 	end
@@ -90,7 +97,6 @@ local module = {}
 
 --<< Public Functions
 function module:playMusic()
-	
 	assert(RunService:IsClient(), "you must call this on the client")
 
 	local music = table.freeze({
@@ -101,7 +107,7 @@ function module:playMusic()
 		"Solo Piano - Fur Elise - Remastered",
 	})
 
-	local function playMusic(lastMusic: string): ()
+	local function playMusic(lastMusic: string?): ()
 		local clonedMusicTable = table.clone(music)
 		if lastMusic then
 			table.remove(clonedMusicTable, table.find(clonedMusicTable, lastMusic))
@@ -116,12 +122,11 @@ function module:playMusic()
 		})
 
 		task.wait(3)
-		
+
 		playMusic(randomMusic)
 	end
 
 	task.spawn(playMusic)
-
 end
 
 function module.loadAllSounds(showDebugInfo: boolean?): ()
@@ -145,7 +150,6 @@ function module.loadAllSounds(showDebugInfo: boolean?): ()
 end
 
 function module:playSound(id: string, soundSettings: soundSettings): ()
-
 	local groupInfo: soundGroupInfo = if soundGroups[soundSettings.group]
 		then soundGroups[soundSettings.group]
 		else self:createSoundGroup(soundSettings.group)
@@ -155,7 +159,8 @@ function module:playSound(id: string, soundSettings: soundSettings): ()
 
 	local soundScope = groupInfo.scope:innerScope()
 
-	local sound: Sound = createSound(soundScope, findSoundIdFromString(id), groupInfo.folder, soundSettings)
+	local sound: Sound =
+		createSound(soundScope, findSoundIdFromString(id), soundSettings.parent or groupInfo.folder, soundSettings)
 	if not sound.IsLoaded then
 		sound.Loaded:Wait()
 	end
@@ -173,14 +178,15 @@ function module:playSound(id: string, soundSettings: soundSettings): ()
 
 	if soundSettings.async then
 		task.spawn(playSound, sound, function()
-			fusion.doCleanup(soundScope)	
+			if soundSettings.onComplete then
+				soundSettings.onComplete()
+			end
+			fusion.doCleanup(soundScope)
 		end)
 	else
 		playSound(sound)
 		fusion.doCleanup(soundScope)
 	end
-
-	
 end
 
 function module:createSoundGroup(name: string): false | soundGroupInfo

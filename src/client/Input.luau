@@ -38,7 +38,6 @@ function module:Start()
 			connection.fired += 1
 		end
 	end)
-
 end
 
 function module:getAllActiveInputs(): { Enum.KeyCode }

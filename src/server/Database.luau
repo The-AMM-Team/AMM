@@ -1,7 +1,6 @@
 --<< Services
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 --<< Packages
 local Datakeep = require(ReplicatedStorage.Shared.ServerPackages.datakeep)
@@ -37,15 +36,27 @@ local template: Types.playerData = {
 	joinDate = os.time(),
 }
 
-local KeepStore = Datakeep.GetStore(if RunService:IsStudio() then "TEMP" else "MAIN", template):expect()
-KeepStore.Wrapper = {
-	setCoins = function(keep, player: Player, amount: number)
-		keep.Data.coins = amount	
-		Coins.Fire(player, amount)
-	end
+local _, keepStore = Datakeep.GetStore("MAIN", template)
+	:catch(function(err: string)
+		for _, player in Players:GetPlayers() do
+			player:Kick("Server Error")
+		end
+	end)
+	:await()
+
+keepStore.Wrapper = {
+
+	addCoins = function(keep, amount: number)
+		keep.Data.coins += 1
+	end,
+
+	removeCoins = function(keep, amount: number)
+		keep.Data.coins -= amount
+	end,
 }
 
-local loadedKeeps = {}
+local keeps = {}
+
 --<< Public Variables
 local module = {
 	onDataLoaded = Signal.new(),
@@ -62,68 +73,59 @@ function module:Start()
 	end)
 
 	Players.PlayerRemoving:Connect(function(player)
-		local keep = self:getKeep(player)
+		local keep = keeps[player]
 
-		if keep then
-			keep:Release()
+		if not keep then
+			return
 		end
+
+		keeps[player] = nil
 	end)
 
 	setSetting.SetCallback(function(player: Player, setting: { data: boolean, name: string })
-		local data: Types.playerData? = self:getPlayerData(player)
+		local data: Types.playerData? = self:getKeepData(player)
 		if data then
-			local currentSettingValue: boolean? = data.settings[setting.name]
-			if currentSettingValue then
-				currentSettingValue = setting.data
-			end
+			data.settings[setting.name] = setting.data
 		end
 	end)
 end
 
 function module:playerAdded(player: Player)
-	KeepStore:LoadKeep(`PLAYER_{player.UserId}`):andThen(function(keep)
-		if not keep then
-			player:Kick("Data Couldn't load :/")
-		end
+	warn(keepStore)
+	keepStore
+		:LoadKeep(player.UserId)
+		:andThen(function(keep)
+			keep:Reconcile()
+			keep:AddUserId(player.UserId)
 
-		keep.Releasing:Connect(function(state)
-			state
-				:andThen(function()
-					print(`{player.Name} is releasing keep!`)
-					player:Kick("Session Release")
-				end)
-				:catch(function(err)
-					warn(`player failed to releasse {player.Name} keep!`, err)
-				end)
+			keep.Releasing:Connect(function(state)
+				state
+					:andThen(function()
+						player:Kick("Session Saved!")
+					end)
+					:catch(warn)
+			end)
+
+			if not player:IsDescendantOf(Players) then
+				keep:Release()
+				return
+			end
+
+			keeps[player] = keep
+
+			Coins.Fire(player, keep.Data.coins)
+			loadSettings.Fire(player, keep.Data.settings)
 		end)
-
-		if not player:IsDescendantOf(Players) then
-			keep:Release()
-			return
-		end
-
-		loadedKeeps[player] = keep
-		keep.Data = template
-		
-		self.onDataLoaded:Fire(player, keep.Data)
-
-		loadSettings.Fire(player, keep.Data.settings)
-		Coins.Fire(player, keep.Data.coins)
-
-	end)
+		:catch(warn)
 end
 
-function module:getAllPlayersKeeps(): { [Player]: any }
-	return loadedKeeps
+function module:getKeep(player)
+	return keeps[player]
 end
 
-function module:getPlayerData(player: Player): Types.playerData?
-	local keep = self:getKeep(player)
-	return if keep then keep.Data else nil
-end
-
-function module:getKeep(player: Player): any?
-	return loadedKeeps[player]
+function module:getKeepData(player: Player): Types.playerData?
+	return keeps[player].Data
 end
 
 return module
+
