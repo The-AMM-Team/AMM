@@ -61,7 +61,7 @@ return function(coinAmountValue: fusion.UsedAs<number>, hide: fusion.UsedAs<bool
 		
 						[Children] = {
 							coinScope:New("UIStroke")({
-								Thickness = 3,
+								Thickness = 4,
 							}),
 						},
 					}),

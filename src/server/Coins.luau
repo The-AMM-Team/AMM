@@ -24,11 +24,12 @@ local scoped = fusion.scoped
 --<< Types
 type coinAreaInfo = {
 	maxAmount: number,
-	coinsInArea: { Part },
+	coinsInArea: fusion.Scope<typeof(fusion)>,
 }
 
 --<< Private Variables
-local allCoinScope = scoped(fusion)
+local coinAreaScope = scoped(fusion)
+local coinAreasInfo = {} :: {[Part]: coinAreaInfo}   
 
 local spawningThread = nil
 
@@ -46,13 +47,32 @@ end
 local module = {}
 
 function module:spawnInCurrentMap()
+
 	local mapInfo = Map:getCurrentMap()
+	for _, area: Part in mapInfo.coinSpawns:GetChildren() do
+		self:createSpawningArea(area)
+	end
 
 	spawningThread = task.spawn(function()
 		while true do
-			task.wait(0.5)
+			task.wait(0.9)
+
 			local areaPart = getRandomArea(mapInfo.coinSpawns:GetChildren())
-			self:spawnCoin(
+
+			local coinAreaInfo = coinAreasInfo[areaPart]
+
+			if #coinAreaInfo.coinsInArea >= coinAreaInfo.maxAmount  then
+				task.spawn(function()
+					areaPart.Color = Color3.fromRGB(255, 0, 0)	
+					areaPart.Transparency = 0
+					task.wait(0.5)
+					areaPart.Color = Color3.fromRGB(255, 255, 255)
+					areaPart.Transparency = 1
+				end)
+				continue 
+			end
+
+			self:spawnCoin(coinAreaInfo,
 				areaPart.Position
 					+ Vector3.new(
 						math.random(-areaPart.Size.X/2, areaPart.Size.X/2),
@@ -62,18 +82,27 @@ function module:spawnInCurrentMap()
 			)
 		end
 	end)
+
 end
 
-function module:spawnCoin(location: Vector3)
-	local coinScope = allCoinScope:innerScope()
+function module:createSpawningArea(area: Part)
+	coinAreasInfo[area] = {
+		maxAmount = (area.Size.X * area.Size.Y) * 0.05,
+		coinsInArea = coinAreaScope:innerScope()
+	}
+end
+
+function module:spawnCoin(spawningArea: coinAreaInfo, location: Vector3)
+	
+	local coinScope = spawningArea.coinsInArea:innerScope()
+	spawningArea.maxAmount += 1
 
 	local uID = HttpService:GenerateGUID(false)
-
 	coinSpawn.FireAll({
 		position = { location.X, location.Y, location.Z },
 		uuid = uID,
 	})
-
+	
 	local block = false
 	table.insert(
 		coinScope,
@@ -83,13 +112,16 @@ function module:spawnCoin(location: Vector3)
 				if rootPart and (location - rootPart.Position).Magnitude < 3 then
 					if block then
 						return
+					else
+						block = true
 					end
-					block = true
+					spawningArea.maxAmount -= 1
 					fusion.doCleanup(coinScope)
 					coinDestroy.FireAll(uID)
+
 					local keep = Database:getKeep(player)
 					if keep then
-						keep:addCoins(math.random(1, 3))
+						keep:addCoins(1)
 						coins.Fire(player, keep.Data.coins)
 					end
 				end
@@ -101,11 +133,12 @@ end
 function module:stopSpawningCoins()
 	if spawningThread then
 		task.cancel(spawningThread)
+		coinAreasInfo = {}
 	end
 end
 
 function module:clearAllCoins()
-	fusion.doCleanup(allCoinScope)
+	fusion.doCleanup(coinAreaScope)
 end
 
 return module

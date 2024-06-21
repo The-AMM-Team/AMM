@@ -25,6 +25,8 @@ local coinsScope = scoped(fusion)
 local coinAmount = fusion.Value({}, nil)
 local hide = fusion.Value({}, true)
 
+local potatoMode = fusion.Value({}, false)
+
 --<< Private Functions
 
 --<< Public Variables
@@ -40,26 +42,33 @@ function module:Start()
 		local rotation = coinModelScope:Value(Vector3.new(0, 0, -90))
 		local position = coinModelScope:Value(spawningPosition)
 
+		local positionTween = coinModelScope:Tween(
+			position,
+			TweenInfo.new(3, Enum.EasingStyle.Quint, Enum.EasingDirection.In, -1, true)
+		)
+
+		local rotationTween = coinModelScope:Tween(
+			rotation,
+			TweenInfo.new(4.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, -1)
+		)
+
 		local coinModel: BasePart = coinModelScope:Hydrate(ReplicatedStorage.Models.Coin:Clone())({
 			Parent = workspace,
 			CanCollide = false,
-			Position = coinModelScope:Tween(
-				position,
-				TweenInfo.new(6, Enum.EasingStyle.Quint, Enum.EasingDirection.In, -1, true)
-			),
-			Rotation = coinModelScope:Tween(
-				rotation,
-				TweenInfo.new(4.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, -1)
-			),
+			Position = positionTween,
+			Rotation = rotationTween,
 		}) :: BasePart
 
-		rotation:set(Vector3.new(0, 360, -90))
-		position:set(spawningPosition - Vector3.new(0, 0.5, 0))
+		if not peek(potatoMode) then
+			rotation:set(Vector3.new(0, 360, -90))
+			position:set(spawningPosition - Vector3.new(0, 0.5, 0))				
+		end
 
 		table.insert(
 			coinModelScope,
 			CoinDestroy.On(function(coinUID: string)
 				if coinUID == coinData.uuid then
+		
 					local temp = coinModelScope:New("Part")({
 						Parent = workspace,
 						CanCollide = false,
@@ -87,6 +96,10 @@ function module:Start()
 	end)
 
 	coins(coinAmount, hide)
+end
+
+function module:setPotatoMode(on: boolean)
+	potatoMode:set(on)
 end
 
 function module:clearAllCoins()

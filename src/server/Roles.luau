@@ -36,6 +36,11 @@ local module = {
 
 --<< Public Functions
 function module:Start()
+
+	for _ , player: Player in Players:GetPlayers() do
+		self.playersCurrentChanceOfMurderer[player] = 2
+	end
+
 	Players.PlayerAdded:Connect(function(player)
 		self.playersCurrentChanceOfMurderer[player] = 2
 	end)

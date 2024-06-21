@@ -7,6 +7,7 @@ local peek = fusion.peek
 
 --<< Modules
 local Input = require(script.Parent.Input)
+local Coins = require(script.Parent.Coins)
 local Sound = require(ReplicatedStorage.Shared.Sound)
 local globalUIState = require(ReplicatedStorage.Shared.Info.GlobalUIState)
 local settingsUI = require(ReplicatedStorage.Shared.UI.settings)
@@ -23,6 +24,7 @@ local module = {}
 
 function module:Start()
 	loadSettingsRemote.SetCallback(function(settings)
+
 		Sound:createSoundGroup("music")
 		Sound:toggleGroup("music", settings.music)
 
@@ -58,6 +60,19 @@ function module:Start()
 				end,
 				defaultValue = settings["sound"],
 			},
+			{
+				name = "Potato Mode",
+				desc = "reduces lag",
+				callback = function(on: boolean)
+					self:togglePotatoMode(on)
+					Sound:playSound("UI Click 1", {
+						async = true,
+						group = "SFX",
+						volume = 1,
+					})
+				end,
+				defaultValue = settings["potatoMode"],
+			},
 		})
 
 		loadedSettings:set(true)
@@ -70,6 +85,14 @@ function module:Start()
 			globalUIState.currentOpenedMenu:set("settings")
 		end
 	end)
+end
+
+function module:togglePotatoMode(on: boolean)
+	Coins:setPotatoMode(on)
+	setSettingRemote.Fire({
+		name = "potatoMode",
+		data = on
+	})
 end
 
 function module:toggleMusic(on: boolean)

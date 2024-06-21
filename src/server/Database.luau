@@ -23,6 +23,7 @@ local template: Types.playerData = {
 	settings = {
 		music = false,
 		sound = true,
+		potatoMode = false,
 	},
 
 	currentKnife = {
@@ -86,17 +87,19 @@ function module:Start()
 		local data: Types.playerData? = self:getKeepData(player)
 		if data then
 			data.settings[setting.name] = setting.data
+			warn(data.settings)
 		end
 	end)
 end
 
 function module:playerAdded(player: Player)
-	warn(keepStore)
 	keepStore
 		:LoadKeep(player.UserId)
 		:andThen(function(keep)
 			keep:Reconcile()
 			keep:AddUserId(player.UserId)
+			
+			warn(keep.Data)
 
 			keep.Releasing:Connect(function(state)
 				state
