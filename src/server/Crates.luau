@@ -7,7 +7,9 @@ local Chance = require(ReplicatedStorage.Shared.Chance)
 local Crates = require(ReplicatedStorage.Shared.Info.Crates)
 
 --<< Remotes
-local serverNet = require(script.Parent.serverNet)
+local ServerRemotes = require(ReplicatedStorage.Shared.Remotes.ServerRemotes)
+local openCrate = ServerRemotes.OpenCrate
+local crateResult = ServerRemotes.CrateResult
 
 --<< Private Variables
 local playersCrateCooldowns = {} 
@@ -20,7 +22,7 @@ local module = {
 --<< Public Functions
 function module:Start()
     
-    serverNet.OpenCrate.SetCallback(function(player: Player, crateName: string)
+    openCrate.SetCallback(function(player: Player, crateName: string)
 
         if not self:getPlayerCrateCooldown(player) then
             self:setPlayerCrateCooldown(player, true)
@@ -30,7 +32,7 @@ function module:Start()
 
         local item = self:buyCrate(player, crateName)
     
-        serverNet.CrateResult.Fire(player, item)
+        crateResult.Fire(player, item)
         task.wait(10)
         self:setPlayerCrateCooldown(player, false)
     end)
@@ -54,7 +56,7 @@ function module:buyCrate(player: Player, name: string): string?
     local cost = crate.cost
     local items = crate.items 
 
-    local playerData = Database:getPlayerData(player) 
+    local playerData = Database:getKeepData(player) 
 
     if playerData.coins >= cost then
         playerData.coins -= cost

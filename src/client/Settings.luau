@@ -13,9 +13,9 @@ local globalUIState = require(ReplicatedStorage.Shared.Info.GlobalUIState)
 local settingsUI = require(ReplicatedStorage.Shared.UI.settings)
 
 --<< Remotes
-local clientNet = require(script.Parent.clientNet)
-local loadSettingsRemote = clientNet.LoadSettings
-local setSettingRemote = clientNet.SetSetting
+local ClientRemotes = require(ReplicatedStorage.Shared.Remotes.ClientRemotes)
+local loadSettingsRemote = ClientRemotes.LoadSettings
+local setSettingRemote = ClientRemotes.SetSetting
 
 --<< Private Variables
 local loadedSettings = fusion.Value({}, false)
@@ -39,7 +39,7 @@ function module:Start()
 				desc = "toggle background music",
 				callback = function(on: boolean)
 					self:toggleMusic(on)
-					Sound:playSound("UI Click 1", {
+					Sound:playSoundOnClient("UI Click 1", {
 						async = true,
 						group = "SFX",
 						volume = 1,
@@ -52,7 +52,7 @@ function module:Start()
 				desc = "toggle sound effects",
 				callback = function(on: boolean)
 					self:toggleSoundEffects(on)
-					Sound:playSound("UI Click 1", {
+					Sound:playSoundOnClient("UI Click 1", {
 						async = true,
 						group = "SFX",
 						volume = 1,
@@ -65,7 +65,7 @@ function module:Start()
 				desc = "reduces lag",
 				callback = function(on: boolean)
 					self:togglePotatoMode(on)
-					Sound:playSound("UI Click 1", {
+					Sound:playSoundOnClient("UI Click 1", {
 						async = true,
 						group = "SFX",
 						volume = 1,

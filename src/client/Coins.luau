@@ -5,10 +5,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local coins = require(ReplicatedStorage.Shared.UI.coins)
 
 --<< Remotes
-local clientNet = require(script.Parent.clientNet)
-local Coins = clientNet.Coins
-local CoinSpawn = clientNet.CoinSpawn
-local CoinDestroy = clientNet.CoinDestroy
+local ClientRemotes = require(ReplicatedStorage.Shared.Remotes.ClientRemotes)
+local Coins = ClientRemotes.Coins
+local CoinSpawn = ClientRemotes.CoinSpawn
+local CoinDestroy = ClientRemotes.CoinDestroy
 
 --<< Modules
 local Sound = require(ReplicatedStorage.Shared.Sound)
@@ -79,7 +79,7 @@ function module:Start()
 
 					coinModel:Destroy()
 
-					Sound:playSound("Coin Collect", {
+					Sound:playSoundOnClient("Coin Collect", {
 						group = "SFX",
 						volume = 0.5,
 						parent = temp,

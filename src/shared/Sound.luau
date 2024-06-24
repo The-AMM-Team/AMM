@@ -4,6 +4,12 @@ local SoundService = game:GetService("SoundService")
 local ContentProvider = game:GetService("ContentProvider")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local clientNet = if RunService:IsClient() then 
+	require(ReplicatedStorage.Shared.Remotes.ClientRemotes)
+else
+	require(ReplicatedStorage.Shared.Remotes.ServerRemotes)
+local Sound = clientNet.Sound
+
 --<< Modules
 local Debug = require(script.Parent.Debug)
 
@@ -21,6 +27,7 @@ type soundSettings = {
 	onInterupt: () -> ()?,
 	onComplete: () -> ()?,
 	parent: Instance?,
+	playAtPosition: Vector3?,
 }
 
 type soundGroupInfo = {
@@ -52,6 +59,12 @@ local sounds: { [string]: number } = {
 
 	--<< Collecting
 	["Coin Collect"] = 1169755927,
+
+	--<< Weapon
+	["KnifeSwing"] = 3939935996,
+	
+	["FlameGunShot"] = 3634981288,
+	["FireKillEffect"] = 8741569477,
 
 	--<< Misc
 	["yay"] = 8304443672,
@@ -96,6 +109,18 @@ end
 local module = {}
 
 --<< Public Functions
+function module:Start()
+	assert("can't call this on the client", 2)
+
+	Sound.SetCallback(function(data: { group: string, id: string, volume: number, playAt: Vector3? })  
+		self:playSoundOnClient(data.id, {
+			group = data.group,
+			Volume = data.volume,
+			playAtPosition = data.playAt,
+		})
+	end)
+end
+
 function module:playMusic()
 	assert(RunService:IsClient(), "you must call this on the client")
 
@@ -115,7 +140,7 @@ function module:playMusic()
 
 		local randomMusic = clonedMusicTable[math.random(1, #clonedMusicTable)]
 
-		module:playSound(randomMusic, {
+		self:playSoundOnClient(randomMusic, {
 			group = "music",
 			async = false,
 			volume = 1,
@@ -131,7 +156,7 @@ end
 
 function module.loadAllSounds(showDebugInfo: boolean?): ()
 	local folder = Instance.new("Folder", SoundService)
-	folder.Name = "Loading"
+	folder.Name = "Loading Sounds"
 
 	local allSoundInstances: { Sound } = {}
 	for name: string, id: number in sounds do
@@ -149,7 +174,19 @@ function module.loadAllSounds(showDebugInfo: boolean?): ()
 	)
 end
 
-function module:playSound(id: string, soundSettings: soundSettings): ()
+function module:playSoundFromServerToClient(id: string, to: {Player}, group: string, volume: number, playAt: Vector3?): ()
+	assert(sounds[id], `the sound "{id}" was not found...`)
+	warn("Fire")
+	Sound.FireList(to, {
+		id = id,
+		group = group,
+		volume = volume,
+		playAt = playAt,
+	})
+end
+
+function module:playSoundOnClient(id: string, soundSettings: soundSettings): ()
+
 	local groupInfo: soundGroupInfo = if soundGroups[soundSettings.group]
 		then soundGroups[soundSettings.group]
 		else self:createSoundGroup(soundSettings.group)
@@ -160,7 +197,14 @@ function module:playSound(id: string, soundSettings: soundSettings): ()
 	local soundScope = groupInfo.scope:innerScope()
 
 	local sound: Sound =
-		createSound(soundScope, findSoundIdFromString(id), soundSettings.parent or groupInfo.folder, soundSettings)
+		createSound(soundScope, findSoundIdFromString(id), if soundSettings.playAtPosition then groupInfo.scope:New "Part" {
+			Parent = workspace,
+			Position = soundSettings.playAtPosition,
+			Size = Vector3.new(1, 1, 1),
+			CanCollide = false,
+			Transparency = 1,
+			Anchored = true,
+		} elseif soundSettings.parent then soundSettings.parent else groupInfo.folder, soundSettings)
 	if not sound.IsLoaded then
 		sound.Loaded:Wait()
 	end

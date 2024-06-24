@@ -1,10 +1,11 @@
 --<< Services
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
 
 --<< Network
-local serverNet = require(script.Parent.serverNet)
-local input = serverNet.Input
+local ServerRemotes = require(ReplicatedStorage.Shared.Remotes.ServerRemotes)
+local input = ServerRemotes.Input
 
 --<< Private Variables
 local timeToKick = (60 * 19)

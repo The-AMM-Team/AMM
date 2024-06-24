@@ -1,5 +1,4 @@
 --<< Services
-local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -7,8 +6,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
 
 --<< Network
-local clientNet = require(script.Parent.clientNet)
-local InputRemote = clientNet.Input
+local ClientRemotes = require(ReplicatedStorage.Shared.Remotes.ClientRemotes)
+local Input = ClientRemotes.Input
 
 --<< Types
 type device = "Keyboard" | "Phone" | "Controller"?
@@ -26,7 +25,7 @@ local module = {
 --<< Public Functions
 function module:Start()
 	UserInputService.InputBegan:Connect(function(input: InputObject, gameProcessedEvent: boolean)
-		InputRemote.Fire()
+		Input.Fire()
 
 		if gameProcessedEvent then
 			return

@@ -9,8 +9,8 @@
 /src/shared/stories
 
 #Network Build
-/src/client/clientNet.luau
-/src/server/serverNet.luau
+/src/shared/Remotes/ServerRemotes.luau
+/src/shared/Remotes/ClientRemotes.luau
 
 #libs
 /wally.lock

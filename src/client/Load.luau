@@ -3,6 +3,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --<< Modules
 local Sound = require(ReplicatedStorage.Shared.Sound)
+local Animation = require(script.Parent.Animation)
 local Settings = require(script.Parent.Settings)
 local Coin = require(script.Parent.Coins)
 local loading = require(ReplicatedStorage.Shared.UI.loading)
@@ -12,6 +13,7 @@ local module = {}
 function module:Start(debug: true?)
 	local loadingThings: { [string]: (debug: true?) -> () } = {
 		["Loading Sound"] = Sound.loadAllSounds,
+		["Loading Animations"] = Animation.loadAllAnimation,
 		["Loading Coins"] = function()
 			Coin:Start()
 			repeat

@@ -5,10 +5,10 @@ local HttpService = game:GetService("HttpService")
 local RunService = game:GetService("RunService")
 
 --<< Remotes
-local serverNet = require(script.Parent.serverNet)
-local coins = serverNet.Coins
-local coinDestroy = serverNet.CoinDestroy
-local coinSpawn = serverNet.CoinSpawn
+local ServerRemotes = require(ReplicatedStorage.Shared.Remotes.ServerRemotes)
+local coins = ServerRemotes.Coins
+local coinDestroy = ServerRemotes.CoinDestroy
+local coinSpawn = ServerRemotes.CoinSpawn
 
 --<< Modules
 local Map = require(script.Parent.Map)

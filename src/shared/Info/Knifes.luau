@@ -30,7 +30,7 @@ return {
 	["flameDragon"] = {
 
 		displayName = "Flame Dragon",
-		image = "rbxassetid://14895358168",
+		image = "rbxassetid://17647699993",
 
 		model = ReplicatedStorage.Models.Knifes.flameDragon,
 		offset = Vector3.new(-1.2, 0, 0),

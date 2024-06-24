@@ -7,10 +7,10 @@ local Datakeep = require(ReplicatedStorage.Shared.ServerPackages.datakeep)
 local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
 
 --<< Network
-local serverNet = require(script.Parent.serverNet)
-local Coins = serverNet.Coins
-local loadSettings = serverNet.LoadSettings
-local setSetting = serverNet.SetSetting
+local ServerRemotes = require(ReplicatedStorage.Shared.Remotes.ServerRemotes)
+local Coins = ServerRemotes.Coins
+local loadSettings = ServerRemotes.LoadSettings
+local setSetting = ServerRemotes.SetSetting
 
 --<< Types
 local Types = require(ReplicatedStorage.Shared.Types)

@@ -90,7 +90,7 @@ return function(scope: fusion.Scope<typeof(fusion)>, props: props)
 			task.wait(0.5)
 			titleVisible:set(true)
 			titleWords:set("You")
-			Sound:playSound("kick boom 1", {
+			Sound:playSoundOnClient("kick boom 1", {
 				async = true,
 				group = "SFX",
 				volume = 1,
@@ -98,7 +98,7 @@ return function(scope: fusion.Scope<typeof(fusion)>, props: props)
 			titleRotation:addVelocity(25)
 			task.wait(1)
 			titleWords:set("You Are")
-			Sound:playSound("kick boom 1", {
+			Sound:playSoundOnClient("kick boom 1", {
 				async = true,
 				group = "SFX",
 				volume = 1,
@@ -106,21 +106,21 @@ return function(scope: fusion.Scope<typeof(fusion)>, props: props)
 			titleRotation:addVelocity(25)
 			task.wait(0.75)
 			roleText:set(".")
-			Sound:playSound("click 1", {
+			Sound:playSoundOnClient("click 1", {
 				async = true,
 				group = "SFX",
 				volume = 0.75,
 			})
 			task.wait(0.5)
 			roleText:set(". .")
-			Sound:playSound("click 1", {
+			Sound:playSoundOnClient("click 1", {
 				async = true,
 				group = "SFX",
 				volume = 0.75,
 			})
 			task.wait(0.5)
 			roleText:set(". . .")
-			Sound:playSound("click 1", {
+			Sound:playSoundOnClient("click 1", {
 				async = true,
 				group = "SFX",
 				volume = 0.75,
@@ -129,7 +129,7 @@ return function(scope: fusion.Scope<typeof(fusion)>, props: props)
 			roleText:set(string.upper(props.role))
 			roleTextColor:set(Role[props.role])
 			roleSize:set(UDim2.fromScale(1, 0.4))
-			Sound:playSound("yay", {
+			Sound:playSoundOnClient("yay", {
 				async = true,
 				group = "SFX",
 				volume = 1,

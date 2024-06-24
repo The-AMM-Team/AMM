@@ -1,5 +1,17 @@
-opt server_output = "src/server/serverNet.luau"
-opt client_output = "src/client/clientNet.luau"
+opt server_output = "src/shared/Remotes/ServerRemotes.luau"
+opt client_output = "src/shared/Remotes/ClientRemotes.luau"
+
+event Sound = {
+	from: Server,
+	type: Unreliable,
+	call: SingleAsync,
+	data: struct {
+		id: string,
+		group: string,
+		volume: u8,
+		playAt: Vector3?,
+	},
+}
 
 event Attack = {
 	from: Client,

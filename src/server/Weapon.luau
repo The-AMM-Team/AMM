@@ -4,10 +4,18 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --<< Modules
 local Hitboxs = require(script.Parent.Hitboxs)
 local Roles = require(script.Parent.Roles)
+local Items = require(script.Parent.Items)
+local Round = require(script.Parent.Round)
+local Database = require(script.Parent.Database)
+local Effects = require(script.Parent.Effects)
+local Sound = require(ReplicatedStorage.Shared.Sound)
 local Character = require(ReplicatedStorage.Shared.Character)
 
 --<< Remotes
-local serverNet = require(script.Parent.serverNet)
+local ServerRemotes = require(ReplicatedStorage.Shared.Remotes.ServerRemotes)
+local equip = ServerRemotes.Equip
+local unequip = ServerRemotes.Unequip
+local attack = ServerRemotes.Attack
 
 --<< Private Functions
 local function checkDistance(p1: Vector3, p2: Vector3): number
@@ -19,21 +27,28 @@ local module = {}
 
 --<< Public Functions
 function module:Start()
-	-- serverNet.Unequip.SetCallback(function(player: Player)
-	--     if modelsOnPlayers[player] then
-	--         modelsOnPlayers[player]:Destroy()
-	--     end
-	-- end)
+	
+	unequip.SetCallback(function(player: Player)
+		if Roles:getMurderer() == player then
+			Items:mountItemToPlayer(player, "flameDragon", "LowerTorso", "RootRigAttachment", true)
+	        Items:unmountItemFromPlayer(player, "RightHand", "flameDragon")
+	    elseif Roles:getSheriff() == player then
+			Items:mountItemToPlayer(player, "lilFlame", "LowerTorso", "RootRigAttachment", true)
+	        Items:unmountItemFromPlayer(player, "RightHand", "lilFlame")
+	    end
+	end)
 
-	-- serverNet.Equip.SetCallback(function(player)
-	--     if Roles:getMurderer() == player then
-	--         modelsOnPlayers[player] = self:mountKnife(player)
-	--     elseif Roles:getSheriff() == player then
-	--         modelsOnPlayers[player] = self:mountGun(player)
-	--     end
-	-- end)
+	equip.SetCallback(function(player)
+	    if Roles:getMurderer() == player then
+			Items:unmountItemFromPlayer(player, "LowerTorso", "flameDragon")
+	        Items:mountItemToPlayer(player, "flameDragon", "RightHand", "RightGripAttachment")
+	    elseif Roles:getSheriff() == player then
+			Items:unmountItemFromPlayer(player, "LowerTorso", "lilFlame")
+	        Items:mountItemToPlayer(player, "lilFlame", "RightHand", "RightGripAttachment")
+	    end
+	end)
 
-	serverNet.Attack.SetCallback(function(player: Player, Data: { characterCFrame: CFrame, mousePosition: Vector3 })
+	attack.SetCallback(function(player: Player, Data: { characterCFrame: CFrame, mousePosition: Vector3 })
 		local character: Model? = player.Character
 		if character and character.PrimaryPart then
 			if checkDistance(Data.characterCFrame.Position, character.PrimaryPart.Position) < 3 then
@@ -57,6 +72,8 @@ function module:attackWithKnife(killer: Player, characterCFrame: CFrame)
 		return if player == killer then false else true
 	end)
 
+	Sound:playSoundFromServerToClient("KnifeSwing", Round:getPlayersInRound(), "SFX", 0.25, characterCFrame.Position)
+
 	local foundBaseParts = workspace:GetPartBoundsInBox(
 		characterCFrame + characterCFrame.LookVector * 4,
 		Vector3.new(4, 4, 4),
@@ -67,6 +84,11 @@ function module:attackWithKnife(killer: Player, characterCFrame: CFrame)
 			local player = Hitboxs:isBasePartAHitbox(part)
 			if player then
 				self:killPlayers(killer, { player })
+
+				local character = player.Character
+				if character then
+					Sound:playSoundFromServerToClient("FireKillEffect", Round:getPlayersInRound(), "SFX", 0.25, character.PrimaryPart.Position)
+				end
 				return
 			end
 		end
@@ -80,11 +102,20 @@ function module:attackWithGun(killer: Player, characterCFrame: CFrame, hit: Vect
 		return if player == killer then false else true
 	end)
 
+	Sound:playSoundFromServerToClient("FlameGunShot", Round:getPlayersInRound(), "SFX", 0.5, characterCFrame.Position)
+	Effects:gunTrail(characterCFrame.Position, hit, {
+		destoryDelay = 1,
+	})
+
 	local result =
 		workspace:Raycast(characterCFrame.Position, (hit - characterCFrame.Position).Unit * 300, raycastParams)
 	if result then
 		local player: Player? = Hitboxs:isBasePartAHitbox(result.Instance)
 		if player then
+			local character = player.Character
+			if character then
+				Sound:playSoundFromServerToClient("FireKillEffect", Round:getPlayersInRound(), "SFX", 0.25, character.PrimaryPart.Position)
+			end
 			self:killPlayers(killer, { player })
 		end
 	end

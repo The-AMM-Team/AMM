@@ -1,4 +1,12 @@
 return function<T>(rarities: { [T]: number }): T
+
+	local amountOfKeyAndValues = 0
+	for key: T, value: number in rarities do
+		amountOfKeyAndValues += 1
+	end
+
+	assert(amountOfKeyAndValues > 0, "Chance System Revieved Nothing")
+
 	local randomNumber = Random.new()
 	local counter = 0
 

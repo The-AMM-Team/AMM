@@ -30,7 +30,7 @@ return {
 	["lilFlame"] = {
 
 		displayName = "lil flame",
-		image = "",
+		image = "rbxassetid://17685231341",
 
 		model = ReplicatedStorage.Models.Guns.lilflame,
 		offset = Vector3.new(1.2, 0, 0),

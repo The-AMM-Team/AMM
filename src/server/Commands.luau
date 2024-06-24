@@ -12,7 +12,6 @@ local module = {
 	playersWithCommands = {},
 
 	privateRoutes = {
-
 		["/th"] = function()
 			Hitboxs:toggleVisibleHitboxs(not Hitboxs:isHitboxShown())
 		end,

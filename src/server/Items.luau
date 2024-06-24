@@ -7,10 +7,7 @@ local Database = require(script.Parent.Database)
 local Round = require(script.Parent.Round)
 local Character = require(ReplicatedStorage.Shared.Character)
 local Knifes = require(ReplicatedStorage.Shared.Info.Knifes)
-local Guns = require(ReplicatedStorage.Shared.Info.Guns)
-
---<< Remotes
-local serverNet = require(script.Parent.serverNet)
+local Guns = require(ReplicatedStorage.Shared.Info.Guns)			
 
 --<< Packages
 local Fusion = require(ReplicatedStorage.Shared.Packages.fusion)
@@ -87,14 +84,6 @@ function module:Start(): ()
 
 	Round.onIntermissionStart:Connect(function() end)
 
-	--// So basically I am lost myself but this mounts the knife/Gun in hand and unmounts it from hip
-	serverNet.Equip.SetCallback(function(player: Player)
-		self:mountItemToPlayer(player, "flameDragon", "RightHand", "RightGripAttachment")
-	end)
-
-	serverNet.Unequip.SetCallback(function(player: Player)
-		self:unmountItemFromPlayer(player, "RightHand", "flameDragon")
-	end)
 end
 
 function module:mountItemToPlayer(

@@ -11,11 +11,11 @@ local Coins = require(script.Parent.Coins)
 local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal)
 
 --<< Remotes
-local serverNet = require(script.Parent.serverNet)
-local roundRemote = serverNet.Round
+local ServerRemotes = require(ReplicatedStorage.Shared.Remotes.ServerRemotes)
+local roundRemote = ServerRemotes.Round
 
 --<< Private Variables
-local intermissionTime = 60
+local intermissionTime = 10
 local roundTime = 60 * 10
 
 local playersInRound = {}
@@ -155,7 +155,7 @@ function module:removeFromRound(players: { Player }, teleportBack: boolean?): ()
 				local character: Model? = player.Character
 
 				if character then
-					character:PivotTo(CFrame.new(0, 10, 0))
+					character:PivotTo(CFrame.new(33.625, 13, -124.11))
 				end
 			end
 		end
@@ -274,7 +274,7 @@ function module:startIntermission(reason: string?): ()
 	local thread: thread? = nil
 
 	--// checks if someone skiped intermission
-	local connection = self.endIntermission:Connect(function()
+	local connection = self.endIntermission:Once(function()
 		--// cap that ***** *** thread (I pray every night that this doesn't mem leak)
 		if thread then
 			coroutine.close(thread)
@@ -343,13 +343,15 @@ function module:startRound(players: { Player }): ()
 	local thread: thread? = nil
 
 	--// so many things could go wrong with a marriage just like this code (I am signing divorce papers soon)
-	local connection = self.endRound:Connect(function(reason: string)
+	local connection = self.endRound:Once(function(reason: string)
 		--// gun down the thread with a aka47 (.close function is the aka47)
 		if thread then
 			coroutine.close(thread)
 		end
 
 		self:roundEndingEffects()
+
+		task.wait(5)
 		self:roundCleanup()
 		self:startIntermission(reason)
 	end)
@@ -364,6 +366,8 @@ function module:startRound(players: { Player }): ()
 		connection:Disconnect()
 
 		self:roundEndingEffects()
+
+		task.wait(5)
 		self:roundCleanup()
 		self:startIntermission("Innocents Won")
 	end)
