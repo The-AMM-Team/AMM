@@ -200,7 +200,7 @@ return function(settings: { settingOption })
 	local frameVisible = settingsScope:Value(false)
 
 	settingsScope:Observer(GlobalUIState.currentOpenedMenu):onChange(function()
-		if peek(GlobalUIState.currentOpenedMenu) then
+		if peek(GlobalUIState.currentOpenedMenu) == "Settings" then
 			frameVisible:set(true)
 		else
 			frameVisible:set(false)
@@ -219,9 +219,7 @@ return function(settings: { settingOption })
 			Position = UDim2.fromScale(0.5, 0.55),
 			Size = settingsScope:Spring(
 				settingsScope:Computed(function(use, scope)
-					return if use(GlobalUIState.currentOpenedMenu) == "settings"
-						then UDim2.fromScale(0.3, 0.55)
-						else UDim2.fromScale(0, 0)
+					return if use(frameVisible) then UDim2.fromScale(0.3, 0.55) else UDim2.fromScale(0, 0)
 				end),
 				25,
 				0.6

@@ -7,6 +7,7 @@ local Animation = require(script.Parent.Animation)
 local Settings = require(script.Parent.Settings)
 local Coin = require(script.Parent.Coins)
 local loading = require(ReplicatedStorage.Shared.UI.loading)
+local menu = require(ReplicatedStorage.Shared.UI.menu)
 
 local module = {}
 
@@ -30,6 +31,8 @@ function module:Start(debug: true?)
 	}
 
 	loading(loadingThings)
+
+	menu()
 end
 
 return module

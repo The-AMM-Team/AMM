@@ -6,14 +6,24 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --<< Remotes
 
 --<< Packages
+local Signal = require(ReplicatedStorage.Shared.Packages.lemonsignal) 
 local Fusion = require(ReplicatedStorage.Shared.Packages.fusion)
+local scoped = Fusion.scoped
 
 --<< Types
+type effectGroupInfo = {
+	scope: Fusion.Scope<typeof(Fusion)>,
+	folder: Folder,
+	endAllEffects: Signal.Signal<nil>,
+}
+
 type settings = {
 	destoryDelay: number,
 }
 
 --<< Private Variables
+local effectScope = scoped(Fusion) 
+local effectGroups = {}
 
 --<< Private Functions
 
@@ -21,13 +31,35 @@ type settings = {
 local module = {}
 
 --<< Public Functions
-function module:gunTrail(orgin: Vector3, hit: Vector3, settings: settings)
+function module:createEffectGroup(name: string): effectGroupInfo
+	if effectGroups[name] then return effectGroups[name] end
+	local scope = effectScope:innerScope() 
+	effectGroups[name] = {
+		scope = scope,
+		folder = scope:New "Folder" {
+			Parent = workspace,
+			Name = name
+		},
+		endAllEffects = Signal.new(),
+	}
+	return effectGroups[name]
+end
 
-	local partTransparency = Fusion.Value({}, 0.75)
-	local partTransparencyTween = Fusion.Tween({}, partTransparency, TweenInfo.new(1, Enum.EasingStyle.Linear))
+function module:getEffectGroup(name: string): effectGroupInfo?
+	return effectGroups[name]
+end
 
-	local trail = Fusion.New({}, "Part")({
-		Parent = workspace,
+function module:gunTrail(group: string, orgin: Vector3, hit: Vector3, settings: settings)
+
+	local groupInfo: effectGroupInfo = self:getEffectGroup(group) or self:createEffectGroup(group)
+
+	local trailScope = groupInfo.scope:innerScope()
+
+	local partTransparency = trailScope:Value(0.8)
+	local partTransparencyTween = trailScope:Tween(partTransparency, TweenInfo.new(1, Enum.EasingStyle.Linear))
+
+	trailScope:New("Part")({
+		Parent = groupInfo.folder,
 		Size = Vector3.new(0.1, 0.1, (orgin - hit).Magnitude),
 		Transparency = partTransparencyTween,
 		Anchored = true,
@@ -35,16 +67,16 @@ function module:gunTrail(orgin: Vector3, hit: Vector3, settings: settings)
 		CFrame = CFrame.lookAt(orgin, hit) * CFrame.new(0, 0, -(orgin - hit).Magnitude / 2),
 	})
 
-	partTransparency:set(settings.destoryDelay)
+	partTransparency:set(1)
 
-	task.delay(settings.destoryDelay, function()
-		trail:Destroy()
-	end)
+	table.insert(trailScope, groupInfo.endAllEffects:Once(function(...: any)  
+		Fusion.doCleanup(trailScope)
+	end))
 
-end
+	table.insert(trailScope, task.delay(settings.destoryDelay, function()
+		Fusion.doCleanup(trailScope)
+	end))
 
-function module:displayImageAboveSomethingWithAFade(position: Vector3, Size: Vector3, image: string)
-	
 end
 
 return module

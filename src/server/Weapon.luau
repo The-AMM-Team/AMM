@@ -103,8 +103,8 @@ function module:attackWithGun(killer: Player, characterCFrame: CFrame, hit: Vect
 	end)
 
 	Sound:playSoundFromServerToClient("FlameGunShot", Round:getPlayersInRound(), "SFX", 0.5, characterCFrame.Position)
-	Effects:gunTrail(characterCFrame.Position, hit, {
-		destoryDelay = 1,
+	Effects:gunTrail("Weapon", characterCFrame.Position, hit, {
+		destoryDelay = 0.5,
 	})
 
 	local result =

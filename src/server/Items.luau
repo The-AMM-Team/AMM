@@ -17,7 +17,6 @@ local scoped = Fusion.scoped
 local Types = require(ReplicatedStorage.Shared.Types)
 
 type playerItemInfo = {
-	cooldown: boolean,
 	mountedItems: {},
 }
 
@@ -49,7 +48,6 @@ function module:Start(): ()
 		local data = Database:getKeepData(player)
 		
 		playersItemInfomation[player] = {
-			cooldown = false,
 			mountedItems = {},
 		}
 
@@ -66,7 +64,6 @@ function module:Start(): ()
 
 	Database.onDataLoaded:Connect(function(player: Player, data: Types.playerData)
 		playersItemInfomation[player] = {
-			cooldown = false,
 			mountedItems = {},
 		}
 
@@ -82,7 +79,11 @@ function module:Start(): ()
 		playersItemInfomation[player] = nil
 	end)
 
-	Round.onIntermissionStart:Connect(function() end)
+	Round.onIntermissionStart:Connect(function()
+		for _, player in Round:getPlayersInLobby() do
+			self:unmountAllFromPlayer(player, "RightHand")
+		end
+	end)
 
 end
 
@@ -126,6 +127,16 @@ function module:mountItemToPlayer(
 			Part1 = bodypart,
 		})
 	end
+end
+
+function module:unmountAllFromPlayer(player: Player, bodypart: string)
+	local info = playersItemInfomation[player]
+	if info.mountedItems[bodypart] then
+	for name: string, instance: Instance in info.mountedItems[bodypart] do
+		instance:Destroy()
+		info.mountedItems[bodypart][name] = nil
+	end
+end
 end
 
 function module:unmountItemFromPlayer(player: Player, bodypart: string, item: string): ()
